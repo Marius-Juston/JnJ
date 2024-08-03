@@ -20,6 +20,8 @@ class MyClient(discord.Client):
         self.add_user_to_adventure = self.tree.command(name='join', description="Adds user to the current adventure!")(
             self.add_user_to_adventure)
 
+        self.adventures = dict()
+
     async def on_ready(self):
         print(f'Logged on as {self.user}!')
 
@@ -46,7 +48,16 @@ class MyClient(discord.Client):
         """
         new_adventure = Adventure(theme, lore)
 
-        await new_adventure.process_lore(interaction)
+        if interaction.guild_id in self.adventures:
+            await self.adventure_started_warning(interaction)
+        else:
+            self.adventures[interaction.guild_id] = new_adventure
+
+            await new_adventure.process_lore(interaction)
+
+    async def adventure_started_warning(self, interaction: discord.Interaction):
+        await interaction.response.send(
+            "Another adventure has already been started for this server. Currently only 1 can be run at the same time")
 
     async def add_user_to_adventure(self, interaction: discord.Interaction):
         pass
