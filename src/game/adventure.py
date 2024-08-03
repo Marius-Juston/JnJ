@@ -12,8 +12,8 @@ class Adventure:
         #TODO :  add the player list 
         embed=discord.Embed(title="New Adventure", description="This is an embed that will show how to build an embed and the different components", color=0x109319)
         embed.add_field(name="Theme", value=self.theme, inline=False)
-        embed.add_field(name="Lore", value=self.lore, inline=True)
-        embed.add_field(name="Player list", value=[], inline=True)
+        embed.add_field(name="Lore", value=self.lore, inline=Flase)
+        embed.add_field(name="Player list", value=[], inline=Flase)
         embed.set_footer(text="Please use /Join_Adventure to join current adventure and type /begin adventure")
 
     def generate_lore(self):
