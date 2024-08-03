@@ -26,7 +26,7 @@ class Adventure:
         if self.lore is None:
             self.lore = self.generate_lore()
         else:
-            user_happy = Ture
+            user_happy = True
         
         while not user_happy:
             
