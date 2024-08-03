@@ -4,6 +4,9 @@ import discord
 from discord import app_commands, Intents
 from dotenv import dotenv_values
 
+from game.adventure import Adventure
+
+
 class MyClient(discord.Client):
     def __init__(self, *, intents: Intents, **options: Any):
         super().__init__(intents=intents, **options)
@@ -32,7 +35,9 @@ class MyClient(discord.Client):
 
     async def start_adventure(self, interaction: discord.Interaction, theme: str,
                               lore: Optional[str]):
-        pass
+        new_adventure = Adventure(theme, lore)
+
+        new_adventure.process_lore(interaction)
 
 
 if __name__ == '__main__':
