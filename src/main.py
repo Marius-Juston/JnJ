@@ -17,6 +17,8 @@ class MyClient(discord.Client):
 
         self.start_adventure = self.tree.command(name='start_adventure', description="Starts a new DnD story!")(
             self.start_adventure)
+        self.add_user_to_adventure = self.tree.command(name='join', description="Adds user to the current adventure!")(
+            self.add_user_to_adventure)
 
     async def on_ready(self):
         print(f'Logged on as {self.user}!')
@@ -35,9 +37,19 @@ class MyClient(discord.Client):
 
     async def start_adventure(self, interaction: discord.Interaction, theme: str,
                               lore: Optional[str]):
+        """
+        Starts the DnD adventure
+        :param interaction:
+        :param theme: The adventure theme
+        :param lore: The optional starting lore for the adventure
+        :return:
+        """
         new_adventure = Adventure(theme, lore)
 
         new_adventure.process_lore(interaction)
+
+    async def add_user_to_adventure(self, interaction: discord.Interaction):
+        pass
 
 
 if __name__ == '__main__':
