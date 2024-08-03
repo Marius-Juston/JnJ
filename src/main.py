@@ -4,7 +4,6 @@ import discord
 from discord import app_commands, Intents
 from dotenv import dotenv_values
 
-
 class MyClient(discord.Client):
     def __init__(self, *, intents: Intents, **options: Any):
         super().__init__(intents=intents, **options)
@@ -13,7 +12,8 @@ class MyClient(discord.Client):
 
         self.tree = app_commands.CommandTree(self)
 
-        self.running = self.tree.command(name='running', description="running faster")(self.running)
+        self.start_adventure = self.tree.command(name='start_adventure', description="Starts a new DnD story!")(
+            self.start_adventure)
 
     async def on_ready(self):
         print(f'Logged on as {self.user}!')
@@ -27,21 +27,27 @@ class MyClient(discord.Client):
             print("Synced tree")
             self.synced = True
 
-    async def on_message(self, message):
+    async def on_message(self, message: discord.Message):
         print(f'Message from {message.author}: {message.content}')
 
-    async def running(self, interaction: discord.Interaction, name: str, infor: int,
-                      superman: Optional[Literal['help', 'cheese']]):
-        print("Hello", interaction, name)
+    async def start_adventure(self, interaction: discord.Interaction, theme: str,
+                              lore: Optional[str]):
+        pass
 
 
 if __name__ == '__main__':
+    #  Loads the secrets configuration data from the .env file
     config = dotenv_values(".env")
 
+    # Prints it out for bebugging sake
     print(config)
 
+    # Intent of that the client is planning to use
     intents = discord.Intents.default()
     intents.message_content = True
 
+    # Crease the client
     client = MyClient(intents=intents)
+
+    # Start the client using the TOKEN stored in the .env
     client.run(config['BOT_TOKEN'])
