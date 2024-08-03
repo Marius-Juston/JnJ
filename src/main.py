@@ -46,7 +46,7 @@ class MyClient(discord.Client):
         """
         new_adventure = Adventure(theme, lore)
 
-        new_adventure.process_lore(interaction)
+        await new_adventure.process_lore(interaction)
 
     async def add_user_to_adventure(self, interaction: discord.Interaction):
         pass
