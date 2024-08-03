@@ -1,5 +1,4 @@
 import discord
-user_happy = False
 
 class Adventure:
     def __init__(self, theme, lore):
@@ -23,7 +22,7 @@ class Adventure:
 
     async def process_lore(self, interaction: discord.Interaction):
         # TODO : GENERATE LORE HERE IF IT DOES NOT EXIST AND ASK USER IF THE CURRENT LORE IS GOOD OR NOT
-
+        user_happy = False
         if self.lore is None:
             self.lore = self.generate_lore()
         else:
