@@ -7,7 +7,7 @@ class Adventure:
         self.theme = theme
         self.lore = lore
 
-    async def adventure_start(self,ctx):
+    async def adventure_announcement(self,ctx):
         #TODO :  add the player list 
         embed=discord.Embed(title="New Adventure", description="This is an embed that will show how to build an embed and the different components", color=0x109319)
         embed.add_field(name="Theme", value=self.theme, inline=False)
@@ -24,13 +24,19 @@ class Adventure:
         # TODO : GENERATE LORE HERE IF IT DOES NOT EXIST AND ASK USER IF THE CURRENT LORE IS GOOD OR NOT
         user_happy = False
         if self.lore is None:
-            self.lore = self.generate_lore()
+            print("No lore input")
+            user_happy = False
         else:
             user_happy = True
-        
-        while not user_happy:
+
+        if user_happy = False:
+            self.lore = self.generate_lore()
+            print("New lore generated")
+        else:
+            print("Prompt user")
+            # TODO : ask for user if this is a good lore
+            user_happy = True
             
-            self.generate_lore
 
 
 
