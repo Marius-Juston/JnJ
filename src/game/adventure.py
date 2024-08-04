@@ -6,14 +6,8 @@ class Adventure:
 
         self.theme = theme
         self.lore = lore
-
-    async def adventure_announcement(self,ctx):
-        #TODO :  add the player list 
-        embed=discord.Embed(title="New Adventure", description="This is an embed that will show how to build an embed and the different components", color=0x109319)
-        embed.add_field(name="Theme", value=self.theme, inline=False)
-        embed.add_field(name="Lore", value=self.lore, inline=Flase)
-        embed.add_field(name="Player list", value=[], inline=Flase)
-        embed.set_footer(text="Please use /Join_Adventure to join current adventure and type /begin adventure")
+        self.process_lore()
+        self.adventure_announcement()
 
     def generate_lore(self):
         # TODO : FUTURE WILL BE DONE USING LLM
@@ -34,10 +28,15 @@ class Adventure:
             print("New lore generated")
         else:
             print("Prompt user")
-            # TODO : ask for user if this is a good lore
-            user_happy = True
+            # TODO : Continue to next portion of the code
             
-
+    async def adventure_announcement(self,ctx):
+        #TODO :  add the player list 
+        embed=discord.Embed(title="New Adventure", description="This is an embed that will show how to build an embed and the different components", color=0x109319)
+        embed.add_field(name="Theme", value=self.theme, inline=False)
+        embed.add_field(name="Lore", value=self.lore, inline=False)
+        embed.add_field(name="Player list", value=[], inline=False)
+        embed.set_footer(text="Please use /Join_Adventure to join current adventure and type /begin adventure")
 
 
         pass
