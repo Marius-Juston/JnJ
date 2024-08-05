@@ -26,6 +26,7 @@ class Adventure:
             self.lore = self.generate_lore()
             print("New lore generated")
             # TODO : prompt user if they like the lore
+            self.user_choice = player_prompt()
             if user_choice is 0:
                 self.lore = None
                 self.process_lore()
