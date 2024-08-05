@@ -1,3 +1,4 @@
+import asyncio
 from abc import ABC, abstractmethod
 from functools import partial
 from typing import Union, List, Optional, Callable, Any
@@ -60,6 +61,10 @@ class AdvancedMessage(ABC):
             self.view = EmojiSelection(emojis, author_id=author_id, callback_handler=self._callback)
         else:
             self.view = None
+
+    async def wait_till_finished(self):
+        while not self.is_finished:
+            await asyncio.sleep(.1)
 
     async def _callback(self, interaction: Interaction, emoji: str):
         self.is_finished = await self.callback(interaction, emoji)
