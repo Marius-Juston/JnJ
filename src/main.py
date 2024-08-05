@@ -1,4 +1,4 @@
-from typing import Any, Optional, Literal
+from typing import Any, Optional
 
 import discord
 from discord import app_commands, Intents, InteractionResponse
