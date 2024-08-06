@@ -1,5 +1,5 @@
 import discord
-
+from prompts import UserPrompt
 
 class Adventure:
     def __init__(self, theme, lore):
@@ -7,9 +7,8 @@ class Adventure:
 
         self.theme = theme
         self.lore = lore
-        self.process_lore()
 
-    def generate_lore(self, interaction):
+    def generate_lore(self):
         # TODO : FUTURE WILL BE DONE USING LLM
         print("generate_lore ran")
         return "The pie is a lie"
@@ -31,21 +30,21 @@ class Adventure:
             self.user_choice = player_prompt()
             if user_choice == 0:
                 self.lore = None
-                self.process_lore()
+                self.process_lore(interaction)
             if user_choice == 1:
                 user_happy = True
                 return self.lore
         else:
-            self.adventure_announcement(self.theme, self.lore)
+            self.adventure_announcement()
 
         return self.lore
 
-    async def adventure_announcement(self, ctx):
+    async def adventure_announcement(self):
         # TODO :  add the player list
         embed = discord.Embed(title="New Adventure", description="This is an embed that will show how to build an embed and the different components", color=0x109319)
         embed.add_field(name="Theme", value=self.theme, inline=False)
         embed.add_field(name="Lore", value=self.lore, inline=False)
         embed.add_field(name="Player list", value=[], inline=False)
         embed.set_footer(text="Please use /Join_Adventure to join current adventure and type /begin_adventure when all players are ready ready")
-        AdvancedMessage()
+        
         pass

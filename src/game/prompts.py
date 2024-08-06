@@ -3,7 +3,7 @@ from game.advanced_message import AdvancedMessage
 
 # Example class for user prompting
 class UserPrompt(AdvancedMessage):
-    def __init__(self, author_id=None):
+    def __init__(self, embed = None, author_id=None):
         """
         Example:
             advanced = UserPrompt(author_id=interaction.user.id)
@@ -17,7 +17,11 @@ class UserPrompt(AdvancedMessage):
 
         :param author_id:
         """
-        super().__init__(content='Are you happy?', emojis=['✅', '❌'], author_id=author_id)
+        content = None
+        if embed is None:
+            content = "are you happy?"
+            
+        super().__init__(content=content,embed=embed, emojis=['✅', '❌'], author_id=author_id)
 
         self.made_choice = False
         self.choice = None
