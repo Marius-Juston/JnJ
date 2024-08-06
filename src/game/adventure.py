@@ -40,7 +40,7 @@ class Adventure:
 
         return self.lore
 
-    async def adventure_announcement(self, ctx):
+    async def adventure_announcement(self, interaction, ctx):
         # TODO :  add the player list
         embed = discord.Embed(title="New Adventure", description="This is an embed that will show how to build an embed and the different components", color=0x109319)
         embed.add_field(name="Theme", value=self.theme, inline=False)
