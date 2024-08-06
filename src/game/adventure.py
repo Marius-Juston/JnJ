@@ -29,10 +29,10 @@ class Adventure:
             self.adventure_announcement()
             # TODO : prompt user if they like the lore
             self.user_choice = player_prompt()
-            if user_choice is 0:
+            if user_choice == 0:
                 self.lore = None
                 self.process_lore()
-            if user_choice is 1:
+            if user_choice == 1:
                 user_happy = True
                 return self.lore
         else:
