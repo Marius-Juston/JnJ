@@ -9,7 +9,7 @@ class Adventure:
         self.lore = lore
         self.process_lore()
 
-    def generate_lore(self):
+    def generate_lore(self, interaction):
         # TODO : FUTURE WILL BE DONE USING LLM
         print("generate_lore ran")
         return "The pie is a lie"
@@ -40,7 +40,7 @@ class Adventure:
 
         return self.lore
 
-    async def adventure_announcement(self, interaction, ctx):
+    async def adventure_announcement(self, ctx):
         # TODO :  add the player list
         embed = discord.Embed(title="New Adventure", description="This is an embed that will show how to build an embed and the different components", color=0x109319)
         embed.add_field(name="Theme", value=self.theme, inline=False)
