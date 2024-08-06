@@ -18,24 +18,33 @@ class Adventure:
 
     async def process_lore(self, interaction: discord.Interaction):
         print("process_lore running")
+        await interaction.response.defer(thinking= True)
 
         if self.lore is None:
-            print("no lore input")
-            await interaction.response.defer(thinking= True)
+
             self.embed_lore = self.generate_lore()
             await asyncio.sleep(1) # TODO: remove when add generate_lore
-            msg = await interaction.original_response()
 
-            embed = self.adventure_announcement()
-            await msg.edit(embed=embed)
+            opt = UserPrompt(content= "Are you hapy with the current generated lore?")
+            await opt.send(interaction.channel)
+            await opt.wait_till_finished()
+            selection = opt.choice
 
-            interaction.response.send_message(content= "Are you hapy with the current generated lore?")
+            if selection == 0:
+                self.lore = self.embed_lore
+            else:
+                self.process_lore
 
         else:
-            print("there is lore")
+
             self.embed_lore = self.lore
-            adventure_message = self.adventure_announcement()
-            await interaction.response.send_message(embed = adventure_message)
+
+        # sends the embed message
+        msg = await interaction.original_response()
+        embed = self.adventure_announcement()
+        await msg.edit(embed=embed)
+
+            
         
     def adventure_announcement(self):
         print("adventure_announcement running")
