@@ -1,7 +1,8 @@
-from typing import Any, Optional, Literal
+from typing import Any, Optional
 
 import discord
-from discord import app_commands, Intents
+from discord import app_commands, Intents, InteractionResponse
+from discord.ui import Modal
 from dotenv import dotenv_values
 
 from game.adventure import Adventure
@@ -20,7 +21,19 @@ class MyClient(discord.Client):
         self.add_user_to_adventure = self.tree.command(name='join', description="Adds user to the current adventure!")(
             self.add_user_to_adventure)
 
+        self.clear_messages = self.tree.command(name='clear_messages', description="Clear this bot's messages")(
+            self.clear_messages)
+
         self.adventures = dict()
+
+    async def clear_messages(self, interaction: discord.Interaction):
+
+        response: InteractionResponse = interaction.response
+        await response.defer(thinking=True, ephemeral=True)
+
+        deleted = await interaction.channel.purge(limit=100, check=lambda msg: msg.author == self.user)
+
+        await interaction.edit_original_response(content=f'Deleted {len(deleted)} message(s)')
 
     async def on_ready(self):
         print(f'Logged on as {self.user}!')
@@ -56,7 +69,9 @@ class MyClient(discord.Client):
             await new_adventure.process_lore(interaction)
 
     async def adventure_started_warning(self, interaction: discord.Interaction):
-        await interaction.response.send(
+        response: InteractionResponse = interaction.response
+
+        await response.send_message(
             "Another adventure has already been started for this server. Currently only 1 can be run at the same time")
 
     async def add_user_to_adventure(self, interaction: discord.Interaction):
@@ -71,8 +86,15 @@ class MyClient(discord.Client):
         else:
             await interaction.response.send("There is no adventure currently running")
 
-
         pass
+
+    async def flesh_out_character(self, interaction: discord.Interaction):
+        modal = Modal(title="Character Information")
+
+        class_input = discord.ui.TextInput(label="Class", placeholder="Human", default="Human",
+                                           style=discord.TextStyle.short)
+        race_input = discord.ui.TextInput(label="Race", placeholder="Human", default="Human",
+                                          style=discord.TextStyle.short)
 
 
 if __name__ == '__main__':
