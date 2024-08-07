@@ -1,7 +1,9 @@
 import asyncio
+from typing import Union
 
 import discord
 
+from game.player import Player
 from game.prompts import UserPrompt
 
 
@@ -11,7 +13,9 @@ class Adventure:
 
         self.theme = theme
         self.lore = lore
-        self.player_list = []
+        self.player_list = dict()
+        self.started = False
+
         print("strarting adventure")
 
     async def generate_lore(self):
@@ -65,8 +69,6 @@ class Adventure:
             text="Please use /Join_Adventure to join current adventure and type /begin_adventure when all players are ready ready")
         return embed
 
-    def add_user(self, user):
+    def add_user(self, user: Union[discord.Member, discord.User]):
         new_user = Player(user)
-        player_list.append [new_user]
-
-        
+        self.player_list[user.id] = new_user
