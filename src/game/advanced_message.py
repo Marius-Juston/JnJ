@@ -72,16 +72,19 @@ class AdvancedMessage(ABC):
         self.is_finished = await self.callback(interaction, emoji)
 
         if self.is_finished and self.remove_buttons_on_finished:
-            await interaction.message.edit(view=None)
+            await self.remove_buttons()
 
         if self.auto_defer:
             response: InteractionResponse = interaction.response
 
             await response.defer()
 
+    async def remove_buttons(self):
+        self.view.stop()
+        await self.sent_message.edit(view=None)
+
     def reset(self):
         self.is_finished = False
-
 
     @abstractmethod
     async def callback(self, interaction: Interaction, emoji: str) -> bool:
