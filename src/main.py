@@ -85,7 +85,7 @@ class MyClient(discord.Client):
             await interaction.response.send_message("You have joined the adventure", ephemeral=Ture)
             pass
         else:
-            await interaction.response.send("There is no adventure currently running")
+            await interaction.response.send_message("There is no adventure currently running")
 
 
     async def flesh_out_character(self, interaction: discord.Interaction):
