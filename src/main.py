@@ -81,7 +81,8 @@ class MyClient(discord.Client):
         :return:
         """
         if interaction.guild_id in self.adventures:
-            new_adventure.add_user
+            adventure = self.adventures[interaction.guild_id]
+            new_adventure.add_user(interaction.user)
             await interaction.response.send_message("You have joined the adventure", ephemeral=Ture)
             pass
         else:

@@ -65,8 +65,8 @@ class Adventure:
             text="Please use /Join_Adventure to join current adventure and type /begin_adventure when all players are ready ready")
         return embed
 
-    def add_user(self):
-        new_user = Player(interaction.user)
+    def add_user(self, user):
+        new_user = Player(user)
         player_list.append [new_user]
 
         
