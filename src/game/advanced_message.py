@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from functools import partial
 from typing import Union, List, Optional, Callable, Any
 
-from discord import InteractionResponse, TextChannel, ButtonStyle, Interaction
+from discord import InteractionResponse, TextChannel, ButtonStyle, Interaction, InteractionMessage, Message
 from discord.ui import View, Button
 
 
@@ -42,6 +42,7 @@ class EmojiSelection(View):
 
 class AdvancedMessage(ABC):
     view: Optional[EmojiSelection]
+    sent_message: Union[InteractionMessage, Message]
 
     def __init__(self, embed=None, content=None, emojis=None, author_id=None, remove_buttons_on_finished=True,
                  auto_defer=True):
@@ -85,6 +86,10 @@ class AdvancedMessage(ABC):
 
     def reset(self):
         self.is_finished = False
+
+    async def delete(self):
+        if self.is_sent():
+            await self.sent_message.delete()
 
     @abstractmethod
     async def callback(self, interaction: Interaction, emoji: str) -> bool:
