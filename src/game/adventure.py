@@ -11,7 +11,7 @@ class Adventure:
 
         self.theme = theme
         self.lore = lore
-        player_list = []
+        self.player_list = []
         print("strarting adventure")
 
     async def generate_lore(self):
@@ -66,7 +66,7 @@ class Adventure:
         return embed
 
     def add_user(self):
-    new_user = Player(interaction.user)
-    player_list.append [new_user]
+        new_user = Player(interaction.user)
+        player_list.append [new_user]
 
         
