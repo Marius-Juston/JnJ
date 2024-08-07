@@ -50,7 +50,7 @@ class Adventure:
             await opt.wait_till_finished()
             selection = opt.choice
 
-        await opt.remove_buttons()
+        await opt.delete()
 
     def adventure_announcement(self):
         print("adventure_announcement running")
