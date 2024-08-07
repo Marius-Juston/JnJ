@@ -1,6 +1,6 @@
 import discord
 from game.prompts import UserPrompt
-import asyncio
+import time
 
 class Adventure:
     def __init__(self, theme, lore):
@@ -12,7 +12,7 @@ class Adventure:
 
     def generate_lore(self):
         # TODO : FUTURE WILL BE DONE USING LLM
-        await asyncio.sleep(1)
+        time.sleep(1)
         print("generate_lore ran")
         
         return "The pie is a lie"
@@ -38,13 +38,16 @@ class Adventure:
         selection = opt.choice
 
         while selection !=0:
-            print("picked true")
-            await interaction.response.defer(thinking= True)
-            self.embed_lore = "testing selection" #self.generate_lore()
+            print("picked false")
+            await msg.edit(embed=None, content= "Generating new lore, Thank you for your patience")
+            self.embed_lore = self.generate_lore()
+            embed = self.adventure_announcement()
+            await msg.edit(embed=embed, content=None)
+            opt.reset()
+            await opt.wait_till_finished()
+            selection = opt.choice
 
-            await msg.edit(embed=embed)
-
-
+        
 
             
         

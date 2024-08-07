@@ -34,7 +34,8 @@ class UserPrompt(AdvancedMessage):
         self.made_choice = True
 
         self.choice =  self.emojis.index(emoji)
+        await interaction.response.send_message("_ _", delete_after = 0 )
 
-        # await interaction.response.send_message('I selected ' + emoji)
+        #await interaction.response.send_message('I selected ' + emoji)
 
         return True
