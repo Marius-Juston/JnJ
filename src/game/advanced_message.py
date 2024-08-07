@@ -44,7 +44,8 @@ class AdvancedMessage(ABC):
     view: Optional[EmojiSelection]
     sent_message: Union[InteractionMessage, Message]
 
-    def __init__(self, embed=None, content=None, emojis=None, author_id=None, remove_buttons_on_finished=True,
+    def __init__(self, embed=None, content=None, view=None, emojis=None, author_id=None,
+                 remove_buttons_on_finished=True,
                  auto_defer=True):
         self.auto_defer = auto_defer
         self.emojis = emojis
@@ -60,10 +61,10 @@ class AdvancedMessage(ABC):
 
         self.sent_message = None
 
-        if self.emojis:
+        if not (view is None) and self.emojis:
             self.view = EmojiSelection(emojis, author_id=author_id, callback_handler=self._callback)
         else:
-            self.view = None
+            self.view = view
 
     async def wait_till_finished(self):
         while not self.is_finished:
