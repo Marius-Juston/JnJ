@@ -20,7 +20,19 @@ class MyClient(discord.Client):
         self.add_user_to_adventure = self.tree.command(name='join', description="Adds user to the current adventure!")(
             self.add_user_to_adventure)
 
+        self.clear_messages = self.tree.command(name='clear_messages', description="Clear this bot's messages")(
+            self.clear_messages)
+
         self.adventures = dict()
+
+    async def clear_messages(self, interaction: discord.Interaction):
+
+        response: InteractionResponse = interaction.response
+        await response.defer(thinking=True, ephemeral=True)
+
+        deleted = await interaction.channel.purge(limit=100, check=lambda msg: msg.author == self.user)
+
+        await interaction.edit_original_response(content=f'Deleted {len(deleted)} message(s)')
 
     async def on_ready(self):
         print(f'Logged on as {self.user}!')
