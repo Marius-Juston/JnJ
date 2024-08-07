@@ -16,6 +16,8 @@ class Adventure:
         self.player_list = dict()
         self.started = False
 
+        self.ready = False
+
         print("strarting adventure")
 
     async def generate_lore(self):
@@ -54,6 +56,8 @@ class Adventure:
             opt.reset()
             await opt.wait_till_finished()
             selection = opt.choice
+
+        self.ready = True
 
         await opt.delete()
 

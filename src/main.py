@@ -29,6 +29,10 @@ class MyClient(discord.Client):
         self.clear_messages = self.tree.command(name='clear_messages', description="Clear this bot's messages")(
             self.clear_messages)
 
+        self.start_ = self.tree.command(name='start',
+                                        description="Closes the entry for new characters and starts the actual story adventure!")(
+            self.start_)
+
         self.adventures = dict()
 
     async def clear_messages(self, interaction: discord.Interaction):
@@ -148,6 +152,24 @@ class MyClient(discord.Client):
         modal.on_submit = on_submit
 
         await response.send_modal(modal)
+
+    async def start_(self, interaction: discord.Interaction):
+
+        response: InteractionResponse = interaction.response
+
+        if interaction.guild_id not in self.adventures:
+            await response.send_message("There are no adventures currently running")
+            return
+
+        adventure: Adventure = self.adventures[interaction.guild_id]
+
+        if not adventure.ready:
+            await response.send_message("The adventure is not ready yet, please complete the /start_adventure command!")
+            return
+
+        adventure.started = True
+
+        await response.send_message(content="Let the adventure begin!")
 
 
 if __name__ == '__main__':
