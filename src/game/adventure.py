@@ -1,6 +1,9 @@
+import asyncio
+
 import discord
+
 from game.prompts import UserPrompt
-import time
+
 
 class Adventure:
     def __init__(self, theme, lore):
@@ -12,7 +15,7 @@ class Adventure:
 
     def generate_lore(self):
         # TODO : FUTURE WILL BE DONE USING LLM
-        time.sleep(1)
+        asyncio.sleep(1)
         print("generate_lore ran")
         
         return "The pie is a lie"
