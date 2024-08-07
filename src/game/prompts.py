@@ -1,3 +1,5 @@
+from discord import Interaction
+
 from game.advanced_message import AdvancedMessage
 
 
@@ -28,14 +30,11 @@ class UserPrompt(AdvancedMessage):
     def finished(self):
         return self.made_choice
 
-    async def callback(self, interaction, emoji):
+    async def callback(self, interaction: Interaction, emoji: str):
         print(interaction, emoji)
 
         self.made_choice = True
 
-        self.choice =  self.emojis.index(emoji)
-        await interaction.response.send_message("_ _", delete_after = 0 )
-
-        #await interaction.response.send_message('I selected ' + emoji)
+        self.choice = self.emojis.index(emoji)
 
         return True
