@@ -141,7 +141,9 @@ class MyClient(discord.Client):
             embed.add_field(name="Race Name", value=user.race_name)
             embed.add_field(name="Background", value=user.background_lore, inline=False)
 
-            await interaction.response.send_message(embed=embed)
+            response: InteractionResponse = interaction.response
+
+            await response.send_message(embed=embed)
 
         modal.on_submit = on_submit
 
