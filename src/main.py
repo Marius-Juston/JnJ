@@ -66,13 +66,12 @@ class MyClient(discord.Client):
         :return:
         """
         if interaction.guild_id in self.adventures:
-            # add author_id
+            new_adventure.add_user
             pass
         else:
             await interaction.response.send("There is no adventure currently running")
 
 
-        pass
 
 
 if __name__ == '__main__':
