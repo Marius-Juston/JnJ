@@ -83,8 +83,12 @@ class AdvancedMessage(ABC):
     def is_sent(self):
         return self.sent_message is not None
 
-    async def send(self, location: Union[InteractionResponse, TextChannel]):
-        if isinstance(location, InteractionResponse):
-            self.sent_message = await location.send_message(content=self.content, embed=self.embed, view=self.view)
+    async def send(self, location: Union[Interaction, TextChannel]):
+        if isinstance(location, Interaction):
+            response: InteractionResponse = location.response
+
+            await response.send_message(content=self.content, embed=self.embed, view=self.view)
+
+            self.sent_message = location.original_response()
         else:
             self.sent_message = await location.send(content=self.content, embed=self.embed, view=self.view)
