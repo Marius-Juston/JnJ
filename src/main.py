@@ -1,11 +1,12 @@
 from typing import Any, Optional
 
 import discord
-from discord import app_commands, Intents, InteractionResponse
+from discord import app_commands, Intents, InteractionResponse, Embed
 from discord.ui import Modal
 from dotenv import dotenv_values
 
 from game.adventure import Adventure
+from game.player import Player
 
 
 class MyClient(discord.Client):
@@ -20,6 +21,10 @@ class MyClient(discord.Client):
             self.start_adventure)
         self.add_user_to_adventure = self.tree.command(name='join', description="Adds user to the current adventure!")(
             self.add_user_to_adventure)
+
+        self.flesh_out_character = self.tree.command(name='add_details',
+                                                     description="Add aditional information for the character before adventure begins.")(
+            self.flesh_out_character)
 
         self.clear_messages = self.tree.command(name='clear_messages', description="Clear this bot's messages")(
             self.clear_messages)
@@ -87,14 +92,60 @@ class MyClient(discord.Client):
         else:
             await interaction.response.send_message("There is no adventure currently running")
 
-
     async def flesh_out_character(self, interaction: discord.Interaction):
+        # TODO Cleanup this function to be more appropriately written
+
+        response: InteractionResponse = interaction.response
+
+        if interaction.guild_id not in self.adventures:
+            await response.send_message("There are no adventures currently running")
+            return
+
+        adventure: Adventure = self.adventures[interaction.guild_id]
+
+        if adventure.started:
+            await response.send_message("Cannot add details to game that is already running")
+            return
+
+        if interaction.user.id not in adventure.player_list:
+            adventure.add_user(interaction.user)
+
+        user: Player = adventure.player_list[interaction.user.id]
+
         modal = Modal(title="Character Information")
 
-        class_input = discord.ui.TextInput(label="Class", placeholder="Human", default="Human",
-                                           style=discord.TextStyle.short)
+        name_input = discord.ui.TextInput(label="Name", placeholder="Bob", default=interaction.user.name,
+                                          style=discord.TextStyle.short, required=True)
         race_input = discord.ui.TextInput(label="Race", placeholder="Human", default="Human",
-                                          style=discord.TextStyle.short)
+                                          style=discord.TextStyle.short, required=False)
+        class_input = discord.ui.TextInput(label="Class", placeholder="Fighter", default="Fighter",
+                                           style=discord.TextStyle.short, required=False)
+        background_input = discord.ui.TextInput(label="Background", placeholder="Background",
+                                                style=discord.TextStyle.paragraph, required=False)
+
+        modal.add_item(name_input)
+        modal.add_item(class_input)
+        modal.add_item(race_input)
+        modal.add_item(background_input)
+
+        async def on_submit(interaction: discord.Interaction):
+            user.character_name = name_input.value
+            user.class_name = class_input.value
+            user.race_name = race_input.value
+            user.background_lore = background_input.value
+
+            embed = Embed(title="Submitted Character details")
+
+            embed.add_field(name="Character Name", value=user.character_name)
+            embed.add_field(name="Class Name", value=user.class_name)
+            embed.add_field(name="Race Name", value=user.race_name)
+            embed.add_field(name="Background", value=user.background_lore, inline=False)
+
+            await interaction.response.send_message(embed=embed)
+
+        modal.on_submit = on_submit
+
+        await response.send_modal(modal)
 
 
 if __name__ == '__main__':
