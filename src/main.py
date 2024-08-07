@@ -64,11 +64,11 @@ class MyClient(discord.Client):
         :param lore: The optional starting lore for the adventure
         :return:
         """
-        new_adventure = Adventure(theme, lore)
 
         if interaction.guild_id in self.adventures:
             await self.adventure_started_warning(interaction)
         else:
+            new_adventure = Adventure(theme, lore)
             self.adventures[interaction.guild_id] = new_adventure
 
             await new_adventure.process_lore(interaction)
