@@ -61,7 +61,7 @@ class AdvancedMessage(ABC):
 
         self.sent_message = None
 
-        if not (view is None) and self.emojis:
+        if view is None and self.emojis:
             self.view = EmojiSelection(emojis, author_id=author_id, callback_handler=self._callback)
         else:
             self.view = view
