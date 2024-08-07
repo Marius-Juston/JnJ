@@ -82,6 +82,7 @@ class MyClient(discord.Client):
         """
         if interaction.guild_id in self.adventures:
             new_adventure.add_user
+            await interaction.response.send_message("You have joined the adventure", ephemeral=Ture)
             pass
         else:
             await interaction.response.send("There is no adventure currently running")
