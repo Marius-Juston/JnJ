@@ -64,3 +64,9 @@ class Adventure:
         embed.set_footer(
             text="Please use /Join_Adventure to join current adventure and type /begin_adventure when all players are ready ready")
         return embed
+
+    async def join_adventure(self):
+        server_name = interaction.guild_id
+        player_list_alive = [server_name]
+        player_list_alive.append(author_id)
+        

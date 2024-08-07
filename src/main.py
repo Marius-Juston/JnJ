@@ -1,7 +1,7 @@
-from typing import Any, Optional
+from typing import Any, Optional, Literal
 
 import discord
-from discord import app_commands, Intents, InteractionResponse
+from discord import app_commands, Intents
 from dotenv import dotenv_values
 
 from game.adventure import Adventure
@@ -20,19 +20,7 @@ class MyClient(discord.Client):
         self.add_user_to_adventure = self.tree.command(name='join', description="Adds user to the current adventure!")(
             self.add_user_to_adventure)
 
-        self.clear_messages = self.tree.command(name='clear_messages', description="Clear this bot's messages")(
-            self.clear_messages)
-
         self.adventures = dict()
-
-    async def clear_messages(self, interaction: discord.Interaction):
-
-        response: InteractionResponse = interaction.response
-        await response.defer(thinking=True, ephemeral=True)
-
-        deleted = await interaction.channel.purge(limit=100, check=lambda msg: msg.author == self.user)
-
-        await interaction.edit_original_response(content=f'Deleted {len(deleted)} message(s)')
 
     async def on_ready(self):
         print(f'Logged on as {self.user}!')
@@ -68,12 +56,22 @@ class MyClient(discord.Client):
             await new_adventure.process_lore(interaction)
 
     async def adventure_started_warning(self, interaction: discord.Interaction):
-        response: InteractionResponse = interaction.response
-
-        await response.send_message(
+        await interaction.response.send(
             "Another adventure has already been started for this server. Currently only 1 can be run at the same time")
 
     async def add_user_to_adventure(self, interaction: discord.Interaction):
+        """
+        Join the DnD adventure
+        :param interaction:
+        :return:
+        """
+        if interaction.guild_id in self.adventures:
+            # add author_id
+            pass
+        else:
+            await interaction.response.send("There is no adventure currently running")
+
+
         pass
 
 
