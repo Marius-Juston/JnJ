@@ -81,12 +81,11 @@ class MyClient(discord.Client):
         :return:
         """
         if interaction.guild_id in self.adventures:
-            # add author_id
+            new_adventure.add_user
             pass
         else:
             await interaction.response.send("There is no adventure currently running")
 
-        pass
 
     async def flesh_out_character(self, interaction: discord.Interaction):
         modal = Modal(title="Character Information")

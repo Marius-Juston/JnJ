@@ -42,10 +42,6 @@ class Player:
 
         await interaction.response.send(embed=embed)
 
-    async def Join_Adventure():
-        player_list_alive = []
-        player_list_alive.append(author_id)
-
 
 if __name__ == '__main__':
     player = Player(None)

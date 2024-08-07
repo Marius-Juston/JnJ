@@ -11,6 +11,7 @@ class Adventure:
 
         self.theme = theme
         self.lore = lore
+        player_list = []
         print("strarting adventure")
 
     async def generate_lore(self):
@@ -55,7 +56,6 @@ class Adventure:
     def adventure_announcement(self):
         print("adventure_announcement running")
         embed_title = "New Adventure"
-        # TODO :  add the player list
         embed = discord.Embed(title=embed_title,
                               description="This is an embed that will show how to build an embed and the different components",
                               color=0x109319)
@@ -65,8 +65,8 @@ class Adventure:
             text="Please use /Join_Adventure to join current adventure and type /begin_adventure when all players are ready ready")
         return embed
 
-    async def join_adventure(self):
-        server_name = interaction.guild_id
-        player_list_alive = [server_name]
-        player_list_alive.append(author_id)
+    def add_user(self):
+    new_user = Player(interaction.user)
+    player_list.append [new_user]
+
         
