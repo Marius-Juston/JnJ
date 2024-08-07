@@ -43,7 +43,9 @@ class EmojiSelection(View):
 class AdvancedMessage(ABC):
     view: Optional[EmojiSelection]
 
-    def __init__(self, embed=None, content=None, emojis=None, author_id=None, remove_buttons_on_finished=True):
+    def __init__(self, embed=None, content=None, emojis=None, author_id=None, remove_buttons_on_finished=True,
+                 auto_defer=True):
+        self.auto_defer = auto_defer
         self.emojis = emojis
         self.embed = embed
         self.content = content
@@ -71,6 +73,11 @@ class AdvancedMessage(ABC):
 
         if self.is_finished and self.remove_buttons_on_finished:
             await interaction.message.edit(view=None)
+
+        if self.auto_defer:
+            response: InteractionResponse = interaction.response
+
+            await response.defer()
 
     def reset(self):
         self.is_finished = False
