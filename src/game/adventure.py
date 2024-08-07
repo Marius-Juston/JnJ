@@ -13,10 +13,10 @@ class Adventure:
         self.lore = lore
         print("strarting adventure")
 
-    def generate_lore(self):
+    async def generate_lore(self):
         # TODO : FUTURE WILL BE DONE USING LLM
-        asyncio.sleep(1)
         print("generate_lore ran")
+        await asyncio.sleep(1)
 
         return "The pie is a lie"
 
@@ -25,7 +25,7 @@ class Adventure:
         await interaction.response.defer(thinking=True)
 
         if self.lore is None:
-            self.embed_lore = self.generate_lore()
+            self.embed_lore = await self.generate_lore()
 
         else:
             self.embed_lore = self.lore
@@ -43,7 +43,7 @@ class Adventure:
         while selection != 0:
             print("picked false")
             await msg.edit(embed=None, content="Generating new lore, Thank you for your patience")
-            self.embed_lore = self.generate_lore()
+            self.embed_lore = await self.generate_lore()
             embed = self.adventure_announcement()
             await msg.edit(embed=embed, content=None)
             opt.reset()
