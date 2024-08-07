@@ -50,10 +50,8 @@ class Adventure:
             await opt.wait_till_finished()
             selection = opt.choice
 
-        
+        await opt.remove_buttons()
 
-            
-        
     def adventure_announcement(self):
         print("adventure_announcement running")
         embed_title = "New Adventure"
