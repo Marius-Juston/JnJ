@@ -128,12 +128,19 @@ class MyClient(discord.Client):
         adventure: Adventure = self.adventures[interaction.guild_id]
 
         if not adventure.ready:
-            await response.send_message("The adventure is not ready yet, please complete the /start_adventure command!")
+            await response.send_message(
+                f"The adventure is not ready yet, please complete the /{self.start_adventure.name} command!")
             return
 
-        adventure.started = True
+        if not adventure.has_player(interaction):
+            await response.send_message(
+                "The member trying to start the adventure has not yet joined the adventure, please do "
+                f"/{self.add_user_to_adventure.name} or /{self.flesh_out_character.name} to be added.")
+            return
 
         await response.send_message(content="Let the adventure begin!")
+
+        await adventure.start_adventure(interaction)
 
 
 if __name__ == '__main__':
