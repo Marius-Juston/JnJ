@@ -1,12 +1,12 @@
 from typing import Any, Optional
 
 import discord
-from discord import app_commands, Intents, InteractionResponse, Embed
-from discord.ui import Modal
+from discord import app_commands, Intents, InteractionResponse
 from dotenv import dotenv_values
 
 from game.adventure import Adventure
 from game.player import Player
+from game.prompts import CharacterDetails
 
 
 class MyClient(discord.Client):
@@ -113,47 +113,7 @@ class MyClient(discord.Client):
 
         user: Player = adventure.player_list[interaction.user.id]
 
-        if user.character_name is None:
-            user.character_name = interaction.user.name
-            user.race_name = "Human"
-            user.class_name = "Fighter"
-            user.background_lore = None
-
-        modal = Modal(title="Character Information")
-
-        name_input = discord.ui.TextInput(label="Name", placeholder="Bob", default=user.character_name,
-                                          style=discord.TextStyle.short, required=True)
-        race_input = discord.ui.TextInput(label="Race", placeholder="Human", default=user.race_name,
-                                          style=discord.TextStyle.short, required=False)
-        class_input = discord.ui.TextInput(label="Class", placeholder="Fighter", default=user.class_name,
-                                           style=discord.TextStyle.short, required=False)
-        background_input = discord.ui.TextInput(label="Background", placeholder="Background",
-                                                default=user.background_lore,
-                                                style=discord.TextStyle.paragraph, required=False)
-
-        modal.add_item(name_input)
-        modal.add_item(class_input)
-        modal.add_item(race_input)
-        modal.add_item(background_input)
-
-        async def on_submit(interaction: discord.Interaction):
-            user.character_name = name_input.value
-            user.class_name = class_input.value
-            user.race_name = race_input.value
-            user.background_lore = background_input.value
-
-            embed = Embed(title="Submitted Character details")
-
-            embed.add_field(name="Character Name", value=user.character_name)
-            embed.add_field(name="Class Name", value=user.class_name)
-            embed.add_field(name="Race Name", value=user.race_name)
-            embed.add_field(name="Background", value=user.background_lore, inline=False)
-
-            response: InteractionResponse = interaction.response
-
-            await response.send_message(embed=embed)
-
-        modal.on_submit = on_submit
+        modal = CharacterDetails(user)
 
         await response.send_modal(modal)
 

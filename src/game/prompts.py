@@ -1,6 +1,8 @@
-from discord import Interaction
+import discord.ui
+from discord import Interaction, Embed, InteractionResponse
 
 from game.advanced_message import AdvancedMessage
+from game.player import Player
 
 
 # Example class for user prompting
@@ -38,3 +40,42 @@ class UserPrompt(AdvancedMessage):
         self.choice = self.emojis.index(emoji)
 
         return True
+
+
+class CharacterDetails(discord.ui.Modal):
+    def __init__(self, user: Player):
+        super().__init__(title='Character details')
+
+        self.user = user
+
+        self.name_input = discord.ui.TextInput(label="Name", placeholder="Bob", default=user.character_name,
+                                               style=discord.TextStyle.short, required=True)
+        self.race_input = discord.ui.TextInput(label="Race", placeholder="Human", default=user.race_name,
+                                               style=discord.TextStyle.short, required=False)
+        self.class_input = discord.ui.TextInput(label="Class", placeholder="Fighter", default=user.class_name,
+                                                style=discord.TextStyle.short, required=False)
+        self.background_input = discord.ui.TextInput(label="Background", placeholder="Background",
+                                                     default=user.background_lore,
+                                                     style=discord.TextStyle.paragraph, required=False)
+
+        self.add_item(self.name_input)
+        self.add_item(self.class_input)
+        self.add_item(self.race_input)
+        self.add_item(self.background_input)
+
+    async def on_submit(self, interaction: discord.Interaction):
+        self.user.character_name = self.name_input.value
+        self.user.class_name = self.class_input.value
+        self.user.race_name = self.race_input.value
+        self.user.background_lore = self.background_input.value
+
+        embed = Embed(title="Submitted Character details")
+
+        embed.add_field(name="Character Name", value=self.user.character_name)
+        embed.add_field(name="Class Name", value=self.user.class_name)
+        embed.add_field(name="Race Name", value=self.user.race_name)
+        embed.add_field(name="Background", value=self.user.background_lore, inline=False)
+
+        response: InteractionResponse = interaction.response
+
+        await response.send_message(embed=embed)
