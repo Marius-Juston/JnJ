@@ -116,15 +116,22 @@ class MyClient(discord.Client):
 
         user: Player = adventure.player_list[interaction.user.id]
 
+        if user.character_name is None:
+            user.character_name = interaction.user.name
+            user.race_name = "Human"
+            user.class_name = "Fighter"
+            user.background_lore = None
+
         modal = Modal(title="Character Information")
 
-        name_input = discord.ui.TextInput(label="Name", placeholder="Bob", default=interaction.user.name,
+        name_input = discord.ui.TextInput(label="Name", placeholder="Bob", default=user.character_name,
                                           style=discord.TextStyle.short, required=True)
-        race_input = discord.ui.TextInput(label="Race", placeholder="Human", default="Human",
+        race_input = discord.ui.TextInput(label="Race", placeholder="Human", default=user.race_name,
                                           style=discord.TextStyle.short, required=False)
-        class_input = discord.ui.TextInput(label="Class", placeholder="Fighter", default="Fighter",
+        class_input = discord.ui.TextInput(label="Class", placeholder="Fighter", default=user.class_name,
                                            style=discord.TextStyle.short, required=False)
         background_input = discord.ui.TextInput(label="Background", placeholder="Background",
+                                                default=user.background_lore,
                                                 style=discord.TextStyle.paragraph, required=False)
 
         modal.add_item(name_input)
