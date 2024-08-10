@@ -17,7 +17,7 @@ class MyClient(discord.Client):
 
         self.tree = app_commands.CommandTree(self)
 
-        self.start_adventure = self.tree.command(name='start_adventure', description="Starts a new DnD story!")(
+        self.start_adventure = self.tree.command(name='setup_adventure', description="Starts a new DnD story!")(
             self.start_adventure)
         self.add_user_to_adventure = self.tree.command(name='join', description="Adds user to the current adventure!")(
             self.add_user_to_adventure)
