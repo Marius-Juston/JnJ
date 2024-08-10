@@ -2,6 +2,7 @@ import asyncio
 from typing import Union
 
 import discord
+from discord import Interaction
 
 from game.player import Player
 from game.prompts import UserPrompt
@@ -19,6 +20,9 @@ class Adventure:
         self.ready = False
 
         print("strarting adventure")
+
+    def has_player(self, interaction: Interaction):
+        return interaction.user.id in self.player_list
 
     async def generate_lore(self):
         # TODO : FUTURE WILL BE DONE USING LLM
@@ -76,3 +80,6 @@ class Adventure:
     def add_user(self, user: Union[discord.Member, discord.User]):
         new_user = Player(user)
         self.player_list[user.id] = new_user
+
+    async def start_adventure(self, interaction: Interaction):
+        pass
