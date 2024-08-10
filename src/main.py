@@ -70,18 +70,15 @@ class MyClient(discord.Client):
         """
 
         if interaction.guild_id in self.adventures:
-            await self.adventure_started_warning(interaction)
+            response: InteractionResponse = interaction.response
+
+            await response.send_message(
+                "Another adventure has already been started for this server. Currently only 1 can be run at the same time")
         else:
             new_adventure = Adventure(theme, lore)
             self.adventures[interaction.guild_id] = new_adventure
 
             await new_adventure.process_lore(interaction)
-
-    async def adventure_started_warning(self, interaction: discord.Interaction):
-        response: InteractionResponse = interaction.response
-
-        await response.send_message(
-            "Another adventure has already been started for this server. Currently only 1 can be run at the same time")
 
     async def add_user_to_adventure(self, interaction: discord.Interaction):
         """
