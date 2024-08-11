@@ -74,7 +74,8 @@ class Adventure:
         embed.add_field(name="Theme", value=self.theme, inline=False)
         embed.add_field(name="Lore", value=self.embed_lore, inline=False)
         embed.set_footer(
-            text="Please use /Join_Adventure to join current adventure and type /begin_adventure when all players are ready ready")
+            text="Please use /join or /add_details to join current adventure and type /start when all players are ready ready")
+        # TODO Not make /join and /add_details to be hard-coded
         return embed
 
     def add_user(self, user: Union[discord.Member, discord.User]):
