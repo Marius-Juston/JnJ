@@ -1,8 +1,9 @@
 import asyncio
-from typing import Union
+from random import shuffle
+from typing import Union, Optional
 
 import discord
-from discord import Interaction
+from discord import Interaction, TextChannel
 
 from game.player import Player
 from game.prompts import UserPrompt
@@ -21,17 +22,27 @@ class Adventure:
 
         print("strarting adventure")
 
-    def has_player(self, interaction: Interaction):
+        self.channel: Optional[TextChannel] = None
+
+        self.player_responses = dict()
+        self.turn_count = 0
+
+    def has_player(self, interaction: Interaction) -> bool:
         return interaction.user.id in self.player_list
 
-    async def generate_lore(self):
+    def get_player(self, interaction: Interaction) -> Player:
+        return self.player_list[interaction.user.id]
+
+    async def generate_lore(self) -> str:
         # TODO : FUTURE WILL BE DONE USING LLM
         print("generate_lore ran")
         await asyncio.sleep(1)
 
         return "The pie is a lie"
 
-    async def process_lore(self, interaction: discord.Interaction):
+    async def process_lore(self, interaction: discord.Interaction) -> None:
+        self.channel = interaction.channel
+
         print("process_lore running")
         await interaction.response.defer(thinking=True)
 
@@ -65,7 +76,7 @@ class Adventure:
 
         await opt.delete()
 
-    def adventure_announcement(self):
+    def adventure_announcement(self) -> discord.Embed:
         print("adventure_announcement running")
         embed_title = "New Adventure"
         embed = discord.Embed(title=embed_title,
@@ -78,9 +89,44 @@ class Adventure:
         # TODO Not make /join and /add_details to be hard-coded
         return embed
 
-    def add_user(self, user: Union[discord.Member, discord.User]):
+    def add_user(self, user: Union[discord.Member, discord.User]) -> None:
         new_user = Player(user)
         self.player_list[user.id] = new_user
 
     async def start_adventure(self, interaction: Interaction):
         pass
+
+    def player_has_responded(self, user) -> bool:
+        return user.id in self.player_responses
+
+    def all_responded(self) -> bool:
+        return len(self.player_responses) == len(self.player_list)
+
+    def next_turn(self) -> None:
+        self.turn_count += 1
+        self.player_responses = dict()
+
+    async def perform_actions(self) -> None:
+        player_list = list(self.player_responses.keys())
+        shuffle(player_list)
+
+        for player in player_list:
+            player = self.player_list[player]
+
+            await self.perform_user_action(player)
+
+        self.next_turn()
+
+    async def perform_user_action(self, user: Player) -> None:
+        await self.channel.send(content=f"Performing the action for {user.character_name}")
+
+    async def world_turn(self) -> None:
+        await self.channel.send(content="All the players have played it is now the WORLD's turn")
+
+    async def add_user_response(self, user: Union[discord.Member, discord.User], content: str) -> None:
+        self.player_responses[user.id] = content
+
+        if self.all_responded():
+            await self.perform_actions()
+
+            await self.world_turn()

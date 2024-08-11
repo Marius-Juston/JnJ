@@ -1,7 +1,7 @@
 from typing import Any, Optional
 
 import discord
-from discord import app_commands, Intents, InteractionResponse
+from discord import app_commands, Intents, InteractionResponse, Embed
 from dotenv import dotenv_values
 
 from game.adventure import Adventure
@@ -33,6 +33,10 @@ class MyClient(discord.Client):
                                         description="Closes the entry for new characters and starts the actual story adventure!")(
             self.start_)
 
+        self.do_action = self.tree.command(name='perform',
+                                           description="Perform whatever the current action the user wants to do for the current turn.")(
+            self.do_action)
+
         self.adventures = dict()
 
     async def clear_messages(self, interaction: discord.Interaction):
@@ -56,8 +60,8 @@ class MyClient(discord.Client):
             print("Synced tree")
             self.synced = True
 
-    async def on_message(self, message: discord.Message):
-        print(f'Message from {message.author}: {message.content}')
+    # async def on_message(self, message: discord.Message):
+    #     print(f'Message from {message.author}: {message.content}')
 
     async def start_adventure(self, interaction: discord.Interaction, theme: str,
                               lore: Optional[str]):
@@ -89,7 +93,8 @@ class MyClient(discord.Client):
         if interaction.guild_id in self.adventures:
             adventure = self.adventures[interaction.guild_id]
             adventure.add_user(interaction.user)
-            await interaction.response.send_message("You have joined the adventure", ephemeral=True)
+            await interaction.response.send_message(
+                f"You have joined the adventure (to customize character details do /{self.flesh_out_character.name}, otherwise it will automatically generated)")
         else:
             await interaction.response.send_message("There is no adventure currently running")
 
@@ -138,9 +143,49 @@ class MyClient(discord.Client):
                 f"/{self.add_user_to_adventure.name} or /{self.flesh_out_character.name} to be added.")
             return
 
-        await response.send_message(content="Let the adventure begin!")
+        await response.send_message(
+            content=f"Let the adventure begin! Please have all the players call the /{self.do_action.name} command")
 
         await adventure.start_adventure(interaction)
+
+    async def do_action(self, interaction: discord.Interaction, action: str):
+
+        response: InteractionResponse = interaction.response
+
+        if interaction.guild_id not in self.adventures:
+            await response.send_message("There are no adventures currently running")
+            return
+
+        adventure: Adventure = self.adventures[interaction.guild_id]
+
+        if not adventure.ready:
+            await response.send_message(
+                f"The adventure is not ready yet, please complete the /{self.start_adventure.name} command!")
+            return
+
+        if not adventure.has_player(interaction):
+            if adventure.started:
+                await response.send_message(
+                    "The adventure has already started you will be unable to join the already started adventure.")
+                return
+            else:
+                await response.send_message(
+                    "The member trying to start the adventure has not yet joined the adventure, please do "
+                    f"/{self.add_user_to_adventure.name} or /{self.flesh_out_character.name} to be added.")
+                return
+
+        if adventure.player_has_responded(interaction.user):
+            await response.send_message(
+                "The member has already responded to the current turn, once submitted you can no longer edit your responses!.")
+            return
+
+        embed = Embed(title=f"{adventure.get_player(interaction).character_name}'s Action")
+        embed.add_field(name="Turn", value=str(adventure.turn_count))
+        embed.add_field(name="Action", value=action, inline=False)
+
+        await interaction.response.send_message(embed=embed)
+
+        await adventure.add_user_response(interaction.user, action)
 
 
 if __name__ == '__main__':
