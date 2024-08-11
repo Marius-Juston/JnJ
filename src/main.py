@@ -92,9 +92,15 @@ class MyClient(discord.Client):
         """
         if interaction.guild_id in self.adventures:
             adventure = self.adventures[interaction.guild_id]
-            adventure.add_user(interaction.user)
-            await interaction.response.send_message(
-                f"You have joined the adventure (to customize character details do /{self.flesh_out_character.name}, otherwise it will automatically generated)")
+
+            if adventure.has_player(interaction):
+                await interaction.response.send_message(
+                    f"You have already joined the adventure to customize character details do /{self.flesh_out_character.name}.")
+            else:
+                adventure.add_user(interaction.user)
+
+                await interaction.response.send_message(
+                    f"You have joined the adventure (to customize character details do /{self.flesh_out_character.name}, otherwise it will automatically generated)")
         else:
             await interaction.response.send_message("There is no adventure currently running")
 
@@ -141,6 +147,11 @@ class MyClient(discord.Client):
             await response.send_message(
                 "The member trying to start the adventure has not yet joined the adventure, please do "
                 f"/{self.add_user_to_adventure.name} or /{self.flesh_out_character.name} to be added.")
+            return
+
+        if not adventure.started:
+            await response.send_message(
+                f"The adventure is has already been started, please perform an action using the /{self.do_action.name} command!")
             return
 
         await response.send_message(
