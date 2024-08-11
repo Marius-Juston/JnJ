@@ -119,7 +119,7 @@ class MyClient(discord.Client):
             await response.send_message("Cannot add details to game that is already running")
             return
 
-        if interaction.user.id not in adventure.player_list:
+        if not adventure.has_player(interaction):
             adventure.add_user(interaction.user)
 
         user: Player = adventure.player_list[interaction.user.id]
