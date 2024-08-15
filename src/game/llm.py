@@ -28,6 +28,28 @@ class LLM:
         with open(f"config/{self.config['systems'][system]}", 'r') as f:
             self.config['systems'][system] = f.read()
 
+    async def astream(self, system_key: str, human_input: str):
+        messages = [
+            (
+                "system", self.config['systems'][system_key],
+            ),
+            ("human", human_input)
+        ]
+
+        chunks = ''
+
+        async for chunk in self.llm.astream(messages):
+            message = chunk.content
+
+            if len(chunks) + len(message) > self.config['max_message_length']:
+                yield chunks
+                chunks = ''
+
+            chunks += message
+
+        if chunks:
+            yield chunks
+
 
 if __name__ == '__main__':
     instance = LLM()
