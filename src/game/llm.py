@@ -1,5 +1,7 @@
 import json
 import functools
+import threading
+from typing import Optional
 
 from langchain_ollama import ChatOllama
 
@@ -28,7 +30,7 @@ class LLM:
         with open(f"config/{self.config['systems'][system]}", 'r') as f:
             self.config['systems'][system] = f.read()
 
-    async def astream(self, system_key: str, human_input: str):
+    async def astream(self, system_key: str, human_input: str, early_termination: Optional[threading.Event] = None):
         messages = [
             (
                 "system", self.config['systems'][system_key],
@@ -46,6 +48,11 @@ class LLM:
                 chunks = ''
 
             chunks += message
+
+            if early_termination and early_termination.is_set():
+                yield chunks
+                chunks = ''
+                break
 
         if chunks:
             yield chunks

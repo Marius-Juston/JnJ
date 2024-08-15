@@ -1,4 +1,5 @@
 import asyncio
+import threading
 from abc import ABC, abstractmethod
 from functools import partial
 from typing import Union, List, Optional, Callable, Any
@@ -66,8 +67,8 @@ class AdvancedMessage(ABC):
         else:
             self.view = view
 
-    async def wait_till_finished(self):
-        while not self.is_finished:
+    async def wait_till_finished(self, early_termination: Optional[threading.Event] = None):
+        while not early_termination.is_set() and not self.is_finished:
             await asyncio.sleep(.1)
 
     async def _callback(self, interaction: Interaction, emoji: str):

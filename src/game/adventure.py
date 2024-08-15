@@ -1,4 +1,5 @@
 import asyncio
+import threading
 from random import shuffle
 from typing import Union, Optional, List, Tuple
 
@@ -19,6 +20,8 @@ class Adventure:
         self.player_list = dict()
         self.started = False
 
+        self.embed_lore = None
+
         self.ready = False
 
         print("strarting adventure")
@@ -27,6 +30,8 @@ class Adventure:
 
         self.player_responses = dict()
         self.turn_count = 0
+
+        self._terminate = threading.Event()
 
         self.llm = LLM()
 
@@ -43,7 +48,10 @@ class Adventure:
         messages = []
         lore = ''
 
-        async for message_chunk in self.llm.astream('lore', self.theme):
+        async for message_chunk in self.llm.astream('lore', self.theme, self._terminate):
+            if not message_chunk:
+                return lore, messages
+
             message = await self.channel.send(message_chunk)
 
             lore += message_chunk
@@ -75,20 +83,24 @@ class Adventure:
 
         opt = UserPrompt(content="Are you hapy with the current generated lore?")
         await opt.send(interaction.channel)
-        await opt.wait_till_finished()
+
+        await opt.wait_till_finished(self._terminate)
         selection = opt.choice
 
-        while selection != 0:
+        while not self._terminate.is_set() and selection != 0:
             print("picked false")
 
             await self.delete_messages(messages)
-
             await msg.edit(embed=None, content="Generating new lore, Thank you for your patience")
+
             self.embed_lore, messages = await self.generate_lore()
             embed = self.adventure_announcement(self.lore is not None)
+
             await msg.edit(embed=embed, content=None)
             opt.reset()
-            await opt.wait_till_finished()
+
+            await opt.wait_till_finished(self._terminate)
+
             selection = opt.choice
 
         self.ready = True
@@ -96,7 +108,6 @@ class Adventure:
         await opt.delete()
 
     def adventure_announcement(self, show_lore=True) -> discord.Embed:
-        print("adventure_announcement running")
         embed_title = "New Adventure"
         embed = discord.Embed(title=embed_title,
                               description="This is an embed that will show how to build an embed and the different components",
@@ -133,6 +144,9 @@ class Adventure:
         shuffle(player_list)
 
         for player in player_list:
+            if not self._terminate.is_set():
+                break
+
             player = self.player_list[player]
 
             await self.perform_user_action(player)
@@ -152,3 +166,7 @@ class Adventure:
             await self.perform_actions()
 
             await self.world_turn()
+
+    def terminate(self):
+        self._terminate.set()
+

@@ -37,7 +37,33 @@ class MyClient(discord.Client):
                                            description="Perform whatever the current action the user wants to do for the current turn.")(
             self.do_action)
 
+        self.terminate = self.tree.command(name='terminate',
+                                           description="Finishes the current adventure process.")(
+            self.terminate)
+
         self.adventures = dict()
+
+
+    async def terminate(self, interaction: discord.Interaction):
+        """
+        Terminates the current adventure
+        :return:
+        """
+
+        response: InteractionResponse = interaction.response
+
+        if interaction.guild_id in self.adventures:
+            await response.defer(thinking=False)
+
+            adventure = self.adventures[interaction.guild_id]
+
+            adventure.terminate()
+
+            print("Set termination key")
+
+            del self.adventures[interaction.guild_id]
+        else:
+            await response.send_message("No adventure to terminate")
 
     async def clear_messages(self, interaction: discord.Interaction):
 
