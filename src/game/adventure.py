@@ -20,8 +20,6 @@ class Adventure:
         self.player_list = dict()
         self.started = False
 
-        self.embed_lore = None
-
         self.ready = False
 
         print("strarting adventure")
@@ -41,15 +39,14 @@ class Adventure:
     def get_player(self, interaction: Interaction) -> Player:
         return self.player_list[interaction.user.id]
 
-    async def generate_lore(self) -> Tuple[str, List[Message]]:
-        # TODO : FUTURE WILL BE DONE USING LLM
+    async def generate_lore(self, user: UserPrompt) -> Tuple[str, List[Message]]:
         print("generate_lore ran")
 
         messages = []
         lore = ''
 
         async for message_chunk in self.llm.astream('lore', self.theme, self._terminate):
-            if not message_chunk:
+            if not message_chunk or (user.is_finished and user.choice == 1):
                 return lore, messages
 
             message = await self.channel.send(message_chunk)
@@ -71,9 +68,9 @@ class Adventure:
         await interaction.response.defer(thinking=True)
 
         if self.lore is None:
-            self.embed_lore, messages = await self.generate_lore()
+            embed_lore, messages = await self.generate_lore()
         else:
-            self.embed_lore = self.lore
+            embed_lore = self.lore
             messages = []
 
         # sends the embed message
@@ -88,20 +85,25 @@ class Adventure:
         selection = opt.choice
 
         while not self._terminate.is_set() and selection != 0:
+            self.lore = None
+            opt.reset()
+
+            self.lore = None
             print("picked false")
 
             await self.delete_messages(messages)
             await msg.edit(embed=None, content="Generating new lore, Thank you for your patience")
 
-            self.embed_lore, messages = await self.generate_lore()
+            embed_lore, messages = await self.generate_lore(opt)
             embed = self.adventure_announcement(self.lore is not None)
 
             await msg.edit(embed=embed, content=None)
-            opt.reset()
 
             await opt.wait_till_finished(self._terminate)
 
             selection = opt.choice
+
+        self.lore = embed_lore
 
         self.ready = True
 
@@ -115,7 +117,7 @@ class Adventure:
         embed.add_field(name="Theme", value=self.theme, inline=False)
 
         if show_lore:
-            embed.add_field(name="Lore", value=self.embed_lore, inline=False)
+            embed.add_field(name="Lore", value=self.lore, inline=False)
 
         embed.set_footer(
             text="Please use /join or /add_details to join current adventure and type /start when all players are ready ready")
@@ -169,4 +171,3 @@ class Adventure:
 
     def terminate(self):
         self._terminate.set()
-
