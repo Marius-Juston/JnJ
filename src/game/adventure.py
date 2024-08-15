@@ -1,10 +1,11 @@
 import asyncio
 from random import shuffle
-from typing import Union, Optional
+from typing import Union, Optional, List, Tuple
 
 import discord
-from discord import Interaction, TextChannel
+from discord import Interaction, TextChannel, Message
 
+from game.llm import LLM
 from game.player import Player
 from game.discord.prompts import UserPrompt
 
@@ -27,18 +28,33 @@ class Adventure:
         self.player_responses = dict()
         self.turn_count = 0
 
+        self.llm = LLM()
+
     def has_player(self, interaction: Interaction) -> bool:
         return interaction.user.id in self.player_list
 
     def get_player(self, interaction: Interaction) -> Player:
         return self.player_list[interaction.user.id]
 
-    async def generate_lore(self) -> str:
+    async def generate_lore(self) -> Tuple[str, List[Message]]:
         # TODO : FUTURE WILL BE DONE USING LLM
         print("generate_lore ran")
-        await asyncio.sleep(1)
 
-        return "The pie is a lie"
+        messages = []
+        lore = ''
+
+        async for message_chunk in self.llm.astream('lore', self.theme):
+            message = await self.channel.send(message_chunk)
+
+            lore += message_chunk
+
+            messages.append(message)
+
+        return lore, messages
+
+    async def delete_messages(self, messages: List[Message]) -> None:
+        for message in messages:
+            await message.delete()
 
     async def process_lore(self, interaction: discord.Interaction) -> None:
         self.channel = interaction.channel
@@ -47,14 +63,14 @@ class Adventure:
         await interaction.response.defer(thinking=True)
 
         if self.lore is None:
-            self.embed_lore = await self.generate_lore()
-
+            self.embed_lore, messages = await self.generate_lore()
         else:
             self.embed_lore = self.lore
+            messages = []
 
         # sends the embed message
         msg = await interaction.original_response()
-        embed = self.adventure_announcement()
+        embed = self.adventure_announcement(self.lore is not None)
         await msg.edit(embed=embed)
 
         opt = UserPrompt(content="Are you hapy with the current generated lore?")
@@ -64,9 +80,12 @@ class Adventure:
 
         while selection != 0:
             print("picked false")
+
+            await self.delete_messages(messages)
+
             await msg.edit(embed=None, content="Generating new lore, Thank you for your patience")
-            self.embed_lore = await self.generate_lore()
-            embed = self.adventure_announcement()
+            self.embed_lore, messages = await self.generate_lore()
+            embed = self.adventure_announcement(self.lore is not None)
             await msg.edit(embed=embed, content=None)
             opt.reset()
             await opt.wait_till_finished()
@@ -76,14 +95,17 @@ class Adventure:
 
         await opt.delete()
 
-    def adventure_announcement(self) -> discord.Embed:
+    def adventure_announcement(self, show_lore=True) -> discord.Embed:
         print("adventure_announcement running")
         embed_title = "New Adventure"
         embed = discord.Embed(title=embed_title,
                               description="This is an embed that will show how to build an embed and the different components",
                               color=0x109319)
         embed.add_field(name="Theme", value=self.theme, inline=False)
-        embed.add_field(name="Lore", value=self.embed_lore, inline=False)
+
+        if show_lore:
+            embed.add_field(name="Lore", value=self.embed_lore, inline=False)
+
         embed.set_footer(
             text="Please use /join or /add_details to join current adventure and type /start when all players are ready ready")
         # TODO Not make /join and /add_details to be hard-coded
