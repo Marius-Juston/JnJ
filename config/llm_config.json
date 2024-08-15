@@ -1,5 +1,7 @@
 {
   "model": "mistral-nemo",
-  "lore": "system/llm_lore_system.txt",
+  "systems": {
+    "lore": "system/llm_lore_system.txt"
+  },
   "max_message_length": 2000
 }
