@@ -6,7 +6,7 @@ import discord
 from discord import Interaction, TextChannel
 
 from game.player import Player
-from game.prompts import UserPrompt
+from game.discord.prompts import UserPrompt
 
 
 class Adventure:

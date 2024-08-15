@@ -1,7 +1,7 @@
 import discord.ui
 from discord import Interaction, Embed, InteractionResponse
 
-from game.advanced_message import AdvancedMessage
+from game.discord.advanced_message import AdvancedMessage
 from game.player import Player
 
 

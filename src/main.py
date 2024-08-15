@@ -6,7 +6,7 @@ from dotenv import dotenv_values
 
 from game.adventure import Adventure
 from game.player import Player
-from game.prompts import CharacterDetails
+from game.discord.prompts import CharacterDetails
 
 
 class MyClient(discord.Client):
