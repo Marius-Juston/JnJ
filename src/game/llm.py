@@ -62,7 +62,40 @@ class LLM:
                 break
 
         if chunks:
-            yield chunks
+            yield chunks.strip()
+
+    def stream(self, system_key: str, human_input: str, early_termination: Optional[threading.Event] = None):
+        messages = [
+            (
+                "system", self.config['systems'][system_key],
+            ),
+            ("human", human_input)
+        ]
+
+        chunks = ''
+
+        for chunk in self.llm.stream(messages):
+            message = chunk.content
+
+            if len(chunks) + len(message) > self.config['max_message_length']:
+
+                index = chunks.rfind('\n')
+
+                if index != -1:
+                    message = chunks[index:] + message
+                    chunks = chunks[:index]
+
+                yield chunks.strip()
+                chunks = ''
+
+            chunks += message
+
+            if early_termination and early_termination.is_set():
+                yield chunks.strip()
+                chunks = ''
+                break
+
+        if chunks:
             yield chunks.strip()
 
 
