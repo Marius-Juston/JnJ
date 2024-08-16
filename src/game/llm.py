@@ -44,18 +44,26 @@ class LLM:
             message = chunk.content
 
             if len(chunks) + len(message) > self.config['max_message_length']:
-                yield chunks
+
+                index = chunks.rfind('\n')
+
+                if index != -1:
+                    message = chunks[index:] + message
+                    chunks = chunks[:index]
+
+                yield chunks.strip()
                 chunks = ''
 
             chunks += message
 
             if early_termination and early_termination.is_set():
-                yield chunks
+                yield chunks.strip()
                 chunks = ''
                 break
 
         if chunks:
             yield chunks
+            yield chunks.strip()
 
 
 if __name__ == '__main__':
