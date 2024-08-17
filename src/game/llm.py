@@ -4,6 +4,7 @@ from collections.abc import Callable
 from typing import Optional, Type, List
 
 from langchain_core.prompts import PromptTemplate
+from langchain_core.runnables.utils import Output
 from langchain_ollama import ChatOllama
 
 
@@ -30,7 +31,7 @@ class LLM:
                 self.load(system_prompt, parent)
 
     def load(self, system, parent):
-        with open(f"config/{self.config[parent][system]}", 'r') as f:
+        with open(f"config/{self.config[parent][system]}", 'r', encoding="utf8") as f:
             self.config[parent][system] = f.read()
 
     async def astream(self, system_key: str, human_input: str, early_termination: Optional[threading.Event] = None,
@@ -96,10 +97,16 @@ class LLM:
             yield chunks
 
     def invoke(self, system_key: str, human_input: str,
-               context: Optional[str] = None, tools: Optional[List[Type[Callable]]] = None):
+               context: Optional[str] = None, tools: Optional[List[Type[Callable]]] = None) -> Output:
         llm, messages = self.setup_input(system_key, human_input, context, tools)
 
         return llm.invoke(messages)
+
+    async def ainvoke(self, system_key: str, human_input: str,
+                      context: Optional[str] = None, tools: Optional[List[Type[Callable]]] = None) -> Output:
+        llm, messages = self.setup_input(system_key, human_input, context, tools)
+
+        return await llm.ainvoke(messages)
 
     def setup_input(self, system_key: str, human_input: str, context: Optional[str] = None,
                     tools: Optional[List[Type[Callable]]] = None):
@@ -119,8 +126,6 @@ class LLM:
             ),
             ("human", human_input)
         ]
-
-        print(messages)
 
         return llm, messages
 
