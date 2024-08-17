@@ -3,6 +3,7 @@ import threading
 from collections.abc import Callable
 from typing import Optional, Type, List
 
+from langchain_core.messages import AIMessage, SystemMessage, HumanMessage
 from langchain_core.prompts import PromptTemplate
 from langchain_core.runnables.utils import Output
 from langchain_ollama import ChatOllama
@@ -121,10 +122,8 @@ class LLM:
             human_input = prompt_template.format(context=context, human_input=human_input)
 
         messages = [
-            (
-                "system", self.config['systems'][system_key],
-            ),
-            ("human", human_input)
+            SystemMessage(self.config['systems'][system_key]),
+            HumanMessage(human_input)
         ]
 
         return llm, messages
