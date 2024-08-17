@@ -65,10 +65,10 @@ Race Name: {self.race_name if self.race_name else ''}
     def generate_embed(self):
         embed = Embed(title="Submitted Character details")
 
-        embed.add_field(name="Character Name", value=self.character_name )
+        embed.add_field(name="Character Name", value=self.character_name)
         embed.add_field(name="Class Name", value=self.class_name)
         embed.add_field(name="Race Name", value=self.race_name)
-        embed.add_field(name="Background", value=self.background_lore, inline=False)
+        embed.set_footer(text=self.background_lore)
 
         return embed
 

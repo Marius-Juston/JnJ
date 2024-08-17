@@ -3,11 +3,11 @@ from random import shuffle
 from typing import Union, Optional, List, Tuple
 
 import discord
-from discord import Interaction, TextChannel, Message
+from discord import Interaction, TextChannel, Message, InteractionResponse
 
-from game.messages.prompts import UserPrompt
 from game.llm import LLM
-from game.player import Player
+from game.messages.prompts import UserPrompt
+from game.player import Player, generate_character
 
 
 class Adventure:
