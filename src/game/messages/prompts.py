@@ -69,12 +69,7 @@ class CharacterDetails(discord.ui.Modal):
         self.user.race_name = self.race_input.value
         self.user.background_lore = self.background_input.value
 
-        embed = Embed(title="Submitted Character details")
-
-        embed.add_field(name="Character Name", value=self.user.character_name)
-        embed.add_field(name="Class Name", value=self.user.class_name)
-        embed.add_field(name="Race Name", value=self.user.race_name)
-        embed.add_field(name="Background", value=self.user.background_lore, inline=False)
+        embed = self.user.generate_embed()
 
         response: InteractionResponse = interaction.response
 
