@@ -67,8 +67,15 @@ class CharacterDetails(discord.ui.Modal):
 
     async def on_submit(self, interaction: discord.Interaction):
         self.user.character_name = self.name_input.value
-        self.user.class_name = self.class_input.value
-        self.user.race_name = self.race_input.value
+
+        if self.class_input.value != self.user.class_name:
+            self.user.class_name = self.class_input.value
+            self.user.class_description = None
+
+        if self.race_input.value != self.user.race_name:
+            self.user.race_name = self.race_input.value
+            self.user.race_description = None
+
         self.user.background_lore = self.background_input.value
 
         response: InteractionResponse = interaction.response
