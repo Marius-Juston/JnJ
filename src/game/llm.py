@@ -133,6 +133,19 @@ class LLM:
         return llm, messages
 
 
+def parse_tool_call(response: AIMessage, *tools: StructuredTool ):
+    tools_dict = {func.name: func for func in tools}
+
+    outputs = []
+
+    for tool_call in response.tool_calls:
+        selected_tool = tools_dict[tool_call["name"].lower()]
+        tool_output = selected_tool.invoke(tool_call["args"])
+        outputs.append(tool_output)
+
+    return outputs
+
+
 if __name__ == '__main__':
     instance = LLM()
     instance2 = LLM()
