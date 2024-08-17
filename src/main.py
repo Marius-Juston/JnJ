@@ -23,10 +23,6 @@ class MyClient(discord.Client):
         self.join = self.tree.command(name='join', description="Adds user to the current adventure!")(
             self.join)
 
-        self.add_details = self.tree.command(name='add_details',
-                                             description="Add aditional information for the character before adventure begins.")(
-            self.add_details)
-
         self.clear_messages = self.tree.command(name='clear_messages', description="Clear this bot's messages")(
             self.clear_messages)
 
@@ -112,49 +108,47 @@ class MyClient(discord.Client):
 
             await new_adventure.process_lore(interaction)
 
-    async def join(self, interaction: discord.Interaction):
+    async def join(self, interaction: discord.Interaction, add_details: bool = False):
         """
         Join the DnD adventure
         :param interaction:
+        :param add_details: Boolean flag to enable modifying / setting the character details
         :return:
         """
-        if interaction.guild_id in self.adventures:
-            adventure = self.adventures[interaction.guild_id]
-
-            if adventure.has_player(interaction):
-                await interaction.response.send_message(
-                    f"You have already joined the adventure to customize character details do /{self.add_details.name}.")
-            else:
-                adventure.add_user(interaction.user)
-
-                await interaction.response.send_message(
-                    f"You have joined the adventure (to customize character details do /{self.add_details.name}, otherwise it will automatically generated)")
-        else:
-            await interaction.response.send_message("There is no adventure currently running")
-
-    async def add_details(self, interaction: discord.Interaction):
-        # TODO Cleanup this function to be more appropriately written
-
         response: InteractionResponse = interaction.response
 
         if interaction.guild_id not in self.adventures:
-            await response.send_message("There are no adventures currently running")
+            await response.send_message("There is no adventure currently running")
             return
 
-        adventure: Adventure = self.adventures[interaction.guild_id]
+        adventure = self.adventures[interaction.guild_id]
 
         if adventure.started:
-            await response.send_message("Cannot add details to game that is already running")
+            await response.send_message("Cannot join / add character details to game that is already running")
             return
 
-        if not adventure.has_player(interaction):
+        if not adventure.ready:
+            await response.send_message(
+                f"The adventure is not ready yet, please complete the /{self.setup_adventure.name} command!")
+            return
+
+        change_details = add_details
+        if adventure.has_player(interaction):
+            change_details = True
+        else:
             adventure.add_user(interaction.user)
 
-        user: Player = adventure.player_list[interaction.user.id]
+        if change_details:
+            user: Player = adventure.player_list[interaction.user.id]
 
-        modal = CharacterDetails(user)
+            modal = CharacterDetails(user, adventure.lore)
 
-        await response.send_modal(modal)
+            await response.send_modal(modal)
+        else:
+            await adventure.generate_character_details(interaction)
+
+            await interaction.followup.send(
+                f"You have joined the adventure (to customize character details do /{self.join.name} add_details: True)")
 
     async def start_(self, interaction: discord.Interaction):
 
