@@ -5,7 +5,7 @@ import discord
 from discord import Embed
 from langchain_core.tools import tool
 
-from game.llm import LLM
+from game.llm import LLM, parse_tool_call
 
 
 @tool
@@ -91,35 +91,38 @@ async def generate_character(llm: LLM, player: Player, lore: str):
     result = await llm.ainvoke('character_creation', character_sheet, context=lore, tools=[player_])
 
     if len(result.tool_calls) == 0:
+        print("ERROR WITH TOOL CHOICE NOT WORKING!!")
         return
 
-    character_details = result.tool_calls[0]['args']
+    outputs = parse_tool_call(result, player_)
+
+    class_name, race_name, background_lore, race_description, class_description = outputs[0]
 
     print(result)
     print("Character Details", result.tool_calls)
 
-    if 'race_name' in character_details and len(character_details['race_name']) <= 256:
-        player.race_name = character_details['race_name']
+    if  len(race_name) <= 256:
+        player.race_name = race_name
     else:
         print("race_name too large")
 
-    if 'class_name' in character_details and len(character_details['class_name']) <= 256:
-        player.class_name = character_details['class_name']
+    if len(class_name) <= 256:
+        player.class_name = class_name
     else:
         print("class_name too large")
 
-    if 'background_lore' in character_details and len(character_details['background_lore']) <= 4096:
-        player.background_lore = character_details['background_lore']
+    if  len(background_lore) <= 4096:
+        player.background_lore = background_lore
     else:
         print("background_lore too large")
 
-    if 'race_description' in character_details and len(character_details['race_description']) <= 1024:
-        player.race_description = character_details['race_description']
+    if  len(race_description) <= 1024:
+        player.race_description = race_description
     else:
         print("race_description too large")
 
-    if 'class_description' in character_details and len(character_details['class_description']) <= 1024:
-        player.class_description = character_details['class_description']
+    if  len(class_description) <= 1024:
+        player.class_description = class_description
     else:
         print("class_description too large")
 
