@@ -4,6 +4,7 @@ from abc import ABC, abstractmethod
 from functools import partial
 from typing import Union, List, Optional, Callable, Any
 
+from discord.errors import NotFound
 from discord import InteractionResponse, TextChannel, ButtonStyle, Interaction, InteractionMessage, Message
 from discord.ui import View, Button
 
@@ -91,7 +92,10 @@ class AdvancedMessage(ABC):
 
     async def delete(self):
         if self.is_sent():
-            await self.sent_message.delete()
+            try:
+                await self.sent_message.delete()
+            except NotFound:
+                pass
 
     @abstractmethod
     async def callback(self, interaction: Interaction, emoji: str) -> bool:
