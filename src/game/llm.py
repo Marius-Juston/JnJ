@@ -1,8 +1,9 @@
 import json
-import functools
 import threading
-from typing import Optional
+from collections.abc import Callable
+from typing import Optional, Type, List
 
+from langchain_core.prompts import PromptTemplate
 from langchain_ollama import ChatOllama
 
 
@@ -23,20 +24,18 @@ class LLM:
             model=self.config['model'],
         )
 
-        for system_prompt in self.config['systems']:
-            self.load(system_prompt)
+        for parent in ('systems', 'templates'):
+            for system_prompt in self.config[parent]:
+                self.load(system_prompt, parent)
 
-    def load(self, system):
-        with open(f"config/{self.config['systems'][system]}", 'r') as f:
-            self.config['systems'][system] = f.read()
+    def load(self, system, parent):
+        with open(f"config/{self.config[parent][system]}", 'r') as f:
+            self.config[parent][system] = f.read()
 
-    async def astream(self, system_key: str, human_input: str, early_termination: Optional[threading.Event] = None):
-        messages = [
-            (
-                "system", self.config['systems'][system_key],
-            ),
-            ("human", human_input)
-        ]
+    async def astream(self, system_key: str, human_input: str, early_termination: Optional[threading.Event] = None,
+                      context: Optional[str] = None):
+
+        llm, messages = self.setup_input(system_key, human_input, context)
 
         chunks = ''
 
@@ -64,17 +63,14 @@ class LLM:
         if chunks:
             yield chunks
 
-    def stream(self, system_key: str, human_input: str, early_termination: Optional[threading.Event] = None):
-        messages = [
-            (
-                "system", self.config['systems'][system_key],
-            ),
-            ("human", human_input)
-        ]
+    def stream(self, system_key: str, human_input: str, early_termination: Optional[threading.Event] = None,
+               context: Optional[str] = None, tools: Optional[List[Type[Callable]]] = None):
+
+        llm, messages = self.setup_input(system_key, human_input, context, tools)
 
         chunks = ''
 
-        for chunk in self.llm.stream(messages):
+        for chunk in llm.stream(messages):
             message = chunk.content
 
             if len(chunks) + len(message) > self.config['max_message_length']:
@@ -96,8 +92,36 @@ class LLM:
                 break
 
         if chunks:
-            yield chunks.strip()
             yield chunks
+
+    def invoke(self, system_key: str, human_input: str,
+               context: Optional[str] = None, tools: Optional[List[Type[Callable]]] = None):
+        llm, messages = self.setup_input(system_key, human_input, context, tools)
+
+        return llm.invoke(messages)
+
+    def setup_input(self, system_key: str, human_input: str, context: Optional[str] = None,
+                    tools: Optional[List[Type[Callable]]] = None):
+        if tools is not None:
+            llm = self.llm.bind_tools(tools)
+        else:
+            llm = self.llm
+
+        if context:
+            prompt_template = PromptTemplate(input_variables=['context', 'human_input'],
+                                             template=self.config['templates'][system_key])
+            human_input = prompt_template.format(context=context, human_input=human_input)
+
+        messages = [
+            (
+                "system", self.config['systems'][system_key],
+            ),
+            ("human", human_input)
+        ]
+
+        print(messages)
+
+        return llm, messages
 
 
 if __name__ == '__main__':
