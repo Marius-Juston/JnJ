@@ -7,5 +7,6 @@
   "templates": {
     "character_creation": "templates/character_creation.txt"
   },
-  "max_message_length": 2000
+  "max_message_length": 2000,
+  "context_window": 64000
 }

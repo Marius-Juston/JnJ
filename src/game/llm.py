@@ -22,6 +22,7 @@ class LLM:
 
         self.llm = ChatOllama(
             model=self.config['model'],
+            num_ctx=self.config['context_window'],
         )
 
         for parent in ('systems', 'templates'):
