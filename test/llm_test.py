@@ -1,9 +1,10 @@
-from langchain_ollama import ChatOllama
-from typing import List
+import json
+import os
+from typing import Any
 
 from langchain_ollama import ChatOllama
-from typing_extensions import TypedDict
-import json
+
+from game.llm import LLM
 
 
 def player_info(class_name: str, race_name: str, background_lore: str) -> bool:
@@ -42,13 +43,14 @@ def test_lore_prompt():
     with open("config/llm_config.json", 'r') as f:
         config = json.load(f)
 
-    with open(f"config/{config['lore']}", 'r') as f:
+    with open(f"config/{config['systems']['lore']}", 'r') as f:
         system_prompt = f.read()
 
     print(system_prompt)
 
     llm = ChatOllama(
-        model="mistral-nemo"
+        model="mistral-nemo",
+        temperature=0,
     )
 
     messages = [
@@ -64,14 +66,51 @@ def test_lore_prompt():
         message = chunk.content
 
         if len(chunks) + len(message) > config['max_message_length']:
-            print(len(chunks))
+            print(chunks, end='')
             chunks = ''
 
         chunks += message
 
     if chunks:
-        print(len(chunks))
+        print(chunks, end='')
+
+def player_(class_name: str, race_name: str, background_lore: str) -> Any:
+    """This function is meant to collect the player information for the Dungeon and Dragon game.
+
+    Args:
+        class_name: (str) The DnD class of the character
+        race_name: (str) The DnD race of the character.
+        background_lore: (str) The detailed and comprehensive background lore of the character.
+    """
+    return class_name, race_name, background_lore
+
+def user_design():
+    llm = LLM()
+
+    lore_file = 'test/context.txt'
+
+    if os.path.exists(lore_file):
+        with open(lore_file, 'r') as f:
+            lore = f.read()
+    else:
+        lore = ''
+
+        for message_chunk in llm.stream('lore', 'Sci-fi Miniaturization War'):
+            lore += message_chunk
+    lore = lore.strip()
+
+
+    player = """
+Character Name: 
+Class Name: 
+Race Name: 
+Character Background Lore:   
+    """.strip()
+
+    result = llm.invoke('character_creation', player, context=lore, tools=[player_] )
+
+    print(result.tool_calls[0]['args'])
 
 
 if __name__ == '__main__':
-    test_lore_prompt()
+    user_design()
