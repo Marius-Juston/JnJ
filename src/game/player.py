@@ -4,6 +4,8 @@ from typing import Union, Any
 import discord
 from discord import Embed
 
+from game.llm import LLM
+
 
 def player_(class_name: str, race_name: str, background_lore: str) -> Any:
     """This function is meant to collect the player information for the Dungeon and Dragon game.
@@ -54,9 +56,9 @@ class Player:
     def __repr__(self) -> str:
         player = f"""
 Character Name: {self.character_name if self.character_name else ''} 
+Character Background Lore: {self.background_lore if self.background_lore else ''} 
 Class Name: {self.class_name if self.class_name else ''} 
 Race Name: {self.race_name if self.race_name else ''} 
-Character Background Lore: {self.background_lore if self.background_lore else ''} 
                 """.strip()
         return player
 
@@ -69,6 +71,27 @@ Character Background Lore: {self.background_lore if self.background_lore else ''
         embed.add_field(name="Background", value=self.background_lore, inline=False)
 
         return embed
+
+    def has_missing_info(self):
+        return not (self.character_name and self.race_name and self.background_lore and self.class_name)
+
+
+async def generate_character(llm: LLM, player: Player, lore: str):
+    character_sheet = str(player)
+
+    result = await llm.ainvoke('character_creation', character_sheet, context=lore, tools=[player_])
+
+    if len(result.tool_calls) == 0:
+        return
+
+    character_details = result.tool_calls[0]['args']
+
+    print(result)
+    print("Character Details", result.tool_calls)
+
+    player.race_name = character_details['race_name']
+    player.class_name = character_details['class_name']
+    player.background_lore = character_details['background_lore']
 
 
 if __name__ == '__main__':

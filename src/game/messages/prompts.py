@@ -1,8 +1,9 @@
 import discord.ui
-from discord import Interaction, Embed, InteractionResponse
+from discord import Interaction, InteractionResponse
 
+from game.llm import LLM
 from game.messages.advanced_message import AdvancedMessage
-from game.player import Player
+from game.player import Player, generate_character
 
 
 # Example class for user prompting
@@ -43,9 +44,10 @@ class UserPrompt(AdvancedMessage):
 
 
 class CharacterDetails(discord.ui.Modal):
-    def __init__(self, user: Player):
+    def __init__(self, user: Player, adventure_lore):
         super().__init__(title='Character details')
 
+        self.adventure_lore = adventure_lore
         self.user = user
 
         self.name_input = discord.ui.TextInput(label="Name", placeholder="Bob", default=user.character_name,
@@ -69,8 +71,12 @@ class CharacterDetails(discord.ui.Modal):
         self.user.race_name = self.race_input.value
         self.user.background_lore = self.background_input.value
 
+        response: InteractionResponse = interaction.response
+        await response.defer(thinking=True)
+
+        while self.user.has_missing_info():
+            await generate_character(LLM(), self.user, self.adventure_lore)
+
         embed = self.user.generate_embed()
 
-        response: InteractionResponse = interaction.response
-
-        await response.send_message(embed=embed)
+        await interaction.edit_original_response(embed=embed)
