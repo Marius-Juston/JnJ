@@ -3,8 +3,10 @@ import os
 from typing import Any
 
 from langchain_ollama import ChatOllama
+from typing_extensions import override
 
 from game.llm import LLM
+from game.player import player_
 
 
 def player_info(class_name: str, race_name: str, background_lore: str) -> bool:
@@ -74,43 +76,36 @@ def test_lore_prompt():
     if chunks:
         print(chunks, end='')
 
-def player_(class_name: str, race_name: str, background_lore: str) -> Any:
-    """This function is meant to collect the player information for the Dungeon and Dragon game.
-
-    Args:
-        class_name: (str) The DnD class of the character
-        race_name: (str) The DnD race of the character.
-        background_lore: (str) The detailed and comprehensive background lore of the character.
-    """
-    return class_name, race_name, background_lore
-
-def user_design():
+def user_design(override=False):
     llm = LLM()
 
     lore_file = 'test/context.txt'
 
-    if os.path.exists(lore_file):
+    if not override and os.path.exists(lore_file):
         with open(lore_file, 'r') as f:
             lore = f.read()
     else:
         lore = ''
 
-        for message_chunk in llm.stream('lore', 'Sci-fi Miniaturization War'):
+        for message_chunk in llm.stream('lore', 'Sci-fi'):
             lore += message_chunk
     lore = lore.strip()
 
+    print(lore)
+
 
     player = """
-Character Name: 
+Character Name: Marius
+Character Background Lore: 
 Class Name: 
 Race Name: 
-Character Background Lore:   
     """.strip()
 
     result = llm.invoke('character_creation', player, context=lore, tools=[player_] )
 
+    print(result.content)
     print(result.tool_calls[0]['args'])
 
 
 if __name__ == '__main__':
-    user_design()
+    user_design(override=True)
