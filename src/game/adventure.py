@@ -1,4 +1,3 @@
-import asyncio
 import threading
 from random import shuffle
 from typing import Union, Optional, List, Tuple
@@ -6,9 +5,9 @@ from typing import Union, Optional, List, Tuple
 import discord
 from discord import Interaction, TextChannel, Message
 
+from game.discord.prompts import UserPrompt
 from game.llm import LLM
 from game.player import Player
-from game.discord.prompts import UserPrompt
 
 
 class Adventure:
@@ -49,7 +48,7 @@ class Adventure:
             if not message_chunk or (user and user.is_finished and user.choice == 1):
                 return lore, messages
 
-            message = await self.channel.send(message_chunk)
+            message = await self.channel.send(message_chunk.strip())
 
             lore += message_chunk
 

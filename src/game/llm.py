@@ -51,18 +51,18 @@ class LLM:
                     message = chunks[index:] + message
                     chunks = chunks[:index]
 
-                yield chunks.strip()
+                yield chunks
                 chunks = ''
 
             chunks += message
 
             if early_termination and early_termination.is_set():
-                yield chunks.strip()
+                yield chunks
                 chunks = ''
                 break
 
         if chunks:
-            yield chunks.strip()
+            yield chunks
 
     def stream(self, system_key: str, human_input: str, early_termination: Optional[threading.Event] = None):
         messages = [
@@ -85,18 +85,19 @@ class LLM:
                     message = chunks[index:] + message
                     chunks = chunks[:index]
 
-                yield chunks.strip()
+                yield chunks
                 chunks = ''
 
             chunks += message
 
             if early_termination and early_termination.is_set():
-                yield chunks.strip()
+                yield chunks
                 chunks = ''
                 break
 
         if chunks:
             yield chunks.strip()
+            yield chunks
 
 
 if __name__ == '__main__':
