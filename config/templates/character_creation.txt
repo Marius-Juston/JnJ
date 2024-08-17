@@ -1,0 +1,9 @@
+This is the background history of the adventure to fill in the adventurer's information from:
+
+{context}
+
+The current player information:
+
+{human_input}
+
+Fill the missing information:
