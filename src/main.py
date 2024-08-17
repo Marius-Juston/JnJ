@@ -5,7 +5,7 @@ from discord import app_commands, Intents, InteractionResponse, Embed
 from dotenv import dotenv_values
 
 from game.adventure import Adventure
-from game.discord.prompts import CharacterDetails
+from game.messages.prompts import CharacterDetails
 from game.player import Player
 
 

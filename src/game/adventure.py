@@ -5,7 +5,7 @@ from typing import Union, Optional, List, Tuple
 import discord
 from discord import Interaction, TextChannel, Message
 
-from game.discord.prompts import UserPrompt
+from game.messages.prompts import UserPrompt
 from game.llm import LLM
 from game.player import Player
 
