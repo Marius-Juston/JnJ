@@ -5,8 +5,8 @@ from discord import app_commands, Intents, InteractionResponse, Embed
 from dotenv import dotenv_values
 
 from game.adventure import Adventure
-from game.player import Player
 from game.discord.prompts import CharacterDetails
+from game.player import Player
 
 
 class MyClient(discord.Client):
@@ -43,7 +43,6 @@ class MyClient(discord.Client):
 
         self.adventures = dict()
 
-
     async def terminate(self, interaction: discord.Interaction):
         """
         Terminates the current adventure
@@ -62,6 +61,8 @@ class MyClient(discord.Client):
             print("Set termination key")
 
             del self.adventures[interaction.guild_id]
+
+            await interaction.edit_original_response(content="Adventure terminated")
         else:
             await response.send_message("No adventure to terminate")
 
