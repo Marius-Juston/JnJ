@@ -3,10 +3,12 @@ from typing import Union, Any
 
 import discord
 from discord import Embed
+from langchain_core.tools import tool
 
 from game.llm import LLM
 
 
+@tool
 def player_(class_name: str, race_name: str, background_lore: str, race_description: str,
             class_description: str) -> Any:
     """This function is meant to collect the player information for the Dungeon and Dragon game.
