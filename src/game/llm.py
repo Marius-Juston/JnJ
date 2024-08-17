@@ -6,6 +6,7 @@ from typing import Optional, Type, List
 from langchain_core.messages import AIMessage, SystemMessage, HumanMessage
 from langchain_core.prompts import PromptTemplate
 from langchain_core.runnables.utils import Output
+from langchain_core.tools import StructuredTool
 from langchain_ollama import ChatOllama
 
 
@@ -36,9 +37,9 @@ class LLM:
             self.config[parent][system] = f.read()
 
     async def astream(self, system_key: str, human_input: str, early_termination: Optional[threading.Event] = None,
-                      context: Optional[str] = None):
+                      context: Optional[str] = None, tool_choice: Optional[str] = None):
 
-        llm, messages = self.setup_input(system_key, human_input, context)
+        llm, messages = self.setup_input(system_key, human_input, context, tool_choice)
 
         chunks = ''
 
@@ -67,9 +68,10 @@ class LLM:
             yield chunks
 
     def stream(self, system_key: str, human_input: str, early_termination: Optional[threading.Event] = None,
-               context: Optional[str] = None, tools: Optional[List[Type[Callable]]] = None):
+               context: Optional[str] = None, tools: Optional[List[Type[Callable]]] = None,
+               tool_choice: Optional[str] = None):
 
-        llm, messages = self.setup_input(system_key, human_input, context, tools)
+        llm, messages = self.setup_input(system_key, human_input, context, tools, tool_choice)
 
         chunks = ''
 
@@ -98,21 +100,23 @@ class LLM:
             yield chunks
 
     def invoke(self, system_key: str, human_input: str,
-               context: Optional[str] = None, tools: Optional[List[Type[Callable]]] = None) -> Output:
-        llm, messages = self.setup_input(system_key, human_input, context, tools)
+               context: Optional[str] = None, tools: Optional[List[Type[Callable]]] = None,
+               tool_choice: Optional[str] = None) -> Output:
+        llm, messages = self.setup_input(system_key, human_input, context, tools, tool_choice)
 
         return llm.invoke(messages)
 
     async def ainvoke(self, system_key: str, human_input: str,
-                      context: Optional[str] = None, tools: Optional[List[Type[Callable]]] = None) -> Output:
-        llm, messages = self.setup_input(system_key, human_input, context, tools)
+                      context: Optional[str] = None, tools: Optional[List[Type[Callable]]] = None,
+                      tool_choice: Optional[str] = None) -> Output:
+        llm, messages = self.setup_input(system_key, human_input, context, tools, tool_choice)
 
         return await llm.ainvoke(messages)
 
     def setup_input(self, system_key: str, human_input: str, context: Optional[str] = None,
-                    tools: Optional[List[Type[Callable]]] = None):
+                    tools: Optional[List[Type[Callable]]] = None, tool_choice: Optional[str] = None):
         if tools is not None:
-            llm = self.llm.bind_tools(tools)
+            llm = self.llm.bind_tools(tools, tool_choice=tool_choice)
         else:
             llm = self.llm
 
