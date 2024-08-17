@@ -170,3 +170,15 @@ class Adventure:
 
     def terminate(self):
         self._terminate.set()
+
+    async def generate_character_details(self, interaction: discord.Interaction):
+        response: InteractionResponse = interaction.response
+
+        await response.defer(thinking=True)
+
+        player = self.get_player(interaction)
+
+        while player.has_missing_info():
+            await generate_character(self.llm, player, self.lore)
+
+        await interaction.edit_original_response(embed=player.generate_embed())

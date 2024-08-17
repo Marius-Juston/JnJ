@@ -1,6 +1,8 @@
 This is the background history of the adventure to fill in the adventurer's information from:
 
+CONTEXT START
 {context}
+CONTEXT END
 
 The current player information:
 
