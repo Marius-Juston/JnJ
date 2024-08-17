@@ -1,7 +1,11 @@
 {
   "model": "mistral-nemo",
   "systems": {
-    "lore": "system/llm_lore_system.txt"
+    "lore": "system/llm_lore_system.txt",
+    "character_creation": "system/character_creation_system.txt"
+  },
+  "templates": {
+    "character_creation": "templates/character_creation.txt"
   },
   "max_message_length": 2000
 }
