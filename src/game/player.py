@@ -39,6 +39,15 @@ class Player:
 
         await interaction.response.send(embed=embed)
 
+    def __repr__(self) -> str:
+        player = f"""
+Character Name: {self.character_name if self.character_name else ''} 
+Class Name: {self.class_name if self.class_name else ''} 
+Race Name: {self.race_name if self.race_name else ''} 
+Character Background Lore: {self.background_lore if self.background_lore else ''} 
+                """.strip()
+        return player
+
 
 if __name__ == '__main__':
     player = Player(None)
