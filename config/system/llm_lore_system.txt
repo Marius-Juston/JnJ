@@ -10,4 +10,6 @@ Current Conflicts and Challenges: Outline the current state of affairs in the wo
 
 Setting: Create a rich, extremely detailed, descriptive setting relevant to the theme. This should include the geographical location, its history, and its current state of affairs. Consider environmental details such as landscapes, climate, and key locations. The setting should serve as the backdrop for the adventure and provide immersive opportunities for exploration.
 Background: Provide a brief history and current situation that explains the political, social, or magical environment of the setting. Introduce key factions, individuals, or events that have shaped the world leading up to the adventure. This should give context for the players’ mission and establish stakes for their involvement.
-Adventure Hook: Offer a clear adventure hook that will draw the players into the narrative. The hook should align with the theme and present an initial challenge or mystery that the players must engage with. Keep the hook concise but compelling, providing a reason for the players to become involved in the setting's conflicts or intrigues.
+
+These adventure should not necessarily contain magical elements, such as sci-fi adventures do not necessary have magic but rather be technology focused. This should be highly dependent on the theme.
+The given theme should NOT be the world's name just the overall theme of the story and should represent the overarching theme of a plot in a possible adventure hook
