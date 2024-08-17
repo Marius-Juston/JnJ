@@ -88,7 +88,7 @@ Race Description: {self.race_description if self.race_description else ''}
 async def generate_character(llm: LLM, player: Player, lore: str):
     character_sheet = str(player)
 
-    result = await llm.ainvoke('character_creation', character_sheet, context=lore, tools=[player_])
+    result = await llm.ainvoke('character_creation', character_sheet, context=lore, tools=[player_], tool_choice='player_')
 
     if len(result.tool_calls) == 0:
         print("ERROR WITH TOOL CHOICE NOT WORKING!!")
