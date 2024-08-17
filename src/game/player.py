@@ -82,7 +82,7 @@ Race Description: {self.race_description if self.race_description else ''}
 
     def has_missing_info(self):
         return not (
-                    self.character_name and self.race_name and self.background_lore and self.class_name and self.race_description and self.race_description)
+                    self.character_name and self.race_name and self.background_lore and self.class_name and self.race_description and self.class_description)
 
 
 async def generate_character(llm: LLM, player: Player, lore: str):
