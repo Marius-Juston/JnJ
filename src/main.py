@@ -17,14 +17,15 @@ class MyClient(discord.Client):
 
         self.tree = app_commands.CommandTree(self)
 
-        self.start_adventure = self.tree.command(name='setup_adventure', description="Starts a new DnD story!")(
-            self.start_adventure)
-        self.add_user_to_adventure = self.tree.command(name='join', description="Adds user to the current adventure!")(
-            self.add_user_to_adventure)
+        self.setup_adventure = self.tree.command(name='setup_adventure', description="Starts a new DnD story!")(
+            self.setup_adventure)
 
-        self.flesh_out_character = self.tree.command(name='add_details',
-                                                     description="Add aditional information for the character before adventure begins.")(
-            self.flesh_out_character)
+        self.join = self.tree.command(name='join', description="Adds user to the current adventure!")(
+            self.join)
+
+        self.add_details = self.tree.command(name='add_details',
+                                             description="Add aditional information for the character before adventure begins.")(
+            self.add_details)
 
         self.clear_messages = self.tree.command(name='clear_messages', description="Clear this bot's messages")(
             self.clear_messages)
@@ -33,9 +34,9 @@ class MyClient(discord.Client):
                                         description="Closes the entry for new characters and starts the actual story adventure!")(
             self.start_)
 
-        self.do_action = self.tree.command(name='perform',
-                                           description="Perform whatever the current action the user wants to do for the current turn.")(
-            self.do_action)
+        self.perform = self.tree.command(name='perform',
+                                         description="Perform whatever the current action the user wants to do for the current turn.")(
+            self.perform)
 
         self.terminate = self.tree.command(name='terminate',
                                            description="Finishes the current adventure process.")(
@@ -90,7 +91,7 @@ class MyClient(discord.Client):
     # async def on_message(self, message: discord.Message):
     #     print(f'Message from {message.author}: {message.content}')
 
-    async def start_adventure(self, interaction: discord.Interaction, theme: str,
+    async def setup_adventure(self, interaction: discord.Interaction, theme: str,
                               lore: Optional[str]):
         """
         Starts the DnD adventure
@@ -111,7 +112,7 @@ class MyClient(discord.Client):
 
             await new_adventure.process_lore(interaction)
 
-    async def add_user_to_adventure(self, interaction: discord.Interaction):
+    async def join(self, interaction: discord.Interaction):
         """
         Join the DnD adventure
         :param interaction:
@@ -122,16 +123,16 @@ class MyClient(discord.Client):
 
             if adventure.has_player(interaction):
                 await interaction.response.send_message(
-                    f"You have already joined the adventure to customize character details do /{self.flesh_out_character.name}.")
+                    f"You have already joined the adventure to customize character details do /{self.add_details.name}.")
             else:
                 adventure.add_user(interaction.user)
 
                 await interaction.response.send_message(
-                    f"You have joined the adventure (to customize character details do /{self.flesh_out_character.name}, otherwise it will automatically generated)")
+                    f"You have joined the adventure (to customize character details do /{self.add_details.name}, otherwise it will automatically generated)")
         else:
             await interaction.response.send_message("There is no adventure currently running")
 
-    async def flesh_out_character(self, interaction: discord.Interaction):
+    async def add_details(self, interaction: discord.Interaction):
         # TODO Cleanup this function to be more appropriately written
 
         response: InteractionResponse = interaction.response
@@ -167,26 +168,26 @@ class MyClient(discord.Client):
 
         if not adventure.ready:
             await response.send_message(
-                f"The adventure is not ready yet, please complete the /{self.start_adventure.name} command!")
+                f"The adventure is not ready yet, please complete the /{self.setup_adventure.name} command!")
             return
 
         if not adventure.has_player(interaction):
             await response.send_message(
                 "The member trying to start the adventure has not yet joined the adventure, please do "
-                f"/{self.add_user_to_adventure.name} or /{self.flesh_out_character.name} to be added.")
+                f"/{self.join.name} or /{self.add_details.name} to be added.")
             return
 
         if not adventure.started:
             await response.send_message(
-                f"The adventure is has already been started, please perform an action using the /{self.do_action.name} command!")
+                f"The adventure is has already been started, please perform an action using the /{self.perform.name} command!")
             return
 
         await response.send_message(
-            content=f"Let the adventure begin! Please have all the players call the /{self.do_action.name} command")
+            content=f"Let the adventure begin! Please have all the players call the /{self.perform.name} command")
 
         await adventure.start_adventure(interaction)
 
-    async def do_action(self, interaction: discord.Interaction, action: str):
+    async def perform(self, interaction: discord.Interaction, action: str):
 
         response: InteractionResponse = interaction.response
 
@@ -198,7 +199,7 @@ class MyClient(discord.Client):
 
         if not adventure.ready:
             await response.send_message(
-                f"The adventure is not ready yet, please complete the /{self.start_adventure.name} command!")
+                f"The adventure is not ready yet, please complete the /{self.setup_adventure.name} command!")
             return
 
         if not adventure.has_player(interaction):
@@ -209,7 +210,7 @@ class MyClient(discord.Client):
             else:
                 await response.send_message(
                     "The member trying to start the adventure has not yet joined the adventure, please do "
-                    f"/{self.add_user_to_adventure.name} or /{self.flesh_out_character.name} to be added.")
+                    f"/{self.join.name} or /{self.add_details.name} to be added.")
                 return
 
         if adventure.player_has_responded(interaction.user):
