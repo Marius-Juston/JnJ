@@ -128,3 +128,6 @@ if __name__ == '__main__':
     instance = LLM()
     instance2 = LLM()
     instance2 = LLM()
+
+    for ch in instance.stream("lore", "Death dungeon"):
+        print("---------------------------------", ch, "---------------------------------", )
