@@ -72,4 +72,11 @@ Character Background Lore: {self.background_lore if self.background_lore else ''
 
 
 if __name__ == '__main__':
-    player = Player(None)
+    class Temp:
+        def __init__(self):
+            self.display_name = "Marius"
+
+
+    player = Player(Temp())
+
+    print(str(player))
