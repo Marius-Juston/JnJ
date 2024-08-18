@@ -155,7 +155,16 @@ class Adventure:
         await self.add_role(user)
 
     async def start_adventure(self, interaction: Interaction):
-        pass
+        self.started = True
+
+        response: InteractionResponse = interaction.response
+
+        await response.defer(thinking=True)
+
+        hook, messages = await self.generate_adventure_hook()
+
+        await interaction.edit_original_response(
+            content="Adventure Hook Completed. Have all the players perform the /perform command")
 
     def player_has_responded(self, user) -> bool:
         return user.id in self.player_responses
@@ -217,3 +226,22 @@ class Adventure:
             await generate_character(self.llm, player, self.lore)
 
         await interaction.edit_original_response(embed=player.generate_embed())
+
+    async def generate_adventure_hook(self):
+        messages = []
+        lore = ''
+
+        human_input = "\n".join(
+            [f"PLAYER {i} START\n" + str(p) + f"\nPLAYER {i} END" for i, p in enumerate(self.player_list.values())])
+
+        async for message_chunk in self.llm.astream('adventure_hook', human_input, self._terminate, context=self.lore):
+            if not message_chunk:
+                return lore, messages
+
+            message = await self.channel.send(message_chunk.strip())
+
+            lore += message_chunk
+
+            messages.append(message)
+
+        return lore, messages

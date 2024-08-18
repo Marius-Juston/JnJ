@@ -178,9 +178,6 @@ class MyClient(discord.Client):
                 f"The adventure has already been started, please perform an action using the /{self.perform.name} command!")
             return
 
-        await response.send_message(
-            content=f"Let the adventure begin! Please have all the players call the /{self.perform.name} command")
-
         await adventure.start_adventure(interaction)
 
     async def perform(self, interaction: discord.Interaction, action: str):
