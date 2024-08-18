@@ -53,7 +53,7 @@ class MyClient(discord.Client):
 
             adventure = self.adventures[interaction.guild_id]
 
-            adventure.terminate()
+            await adventure.terminate()
 
             print("Set termination key")
 
@@ -103,7 +103,9 @@ class MyClient(discord.Client):
             await response.send_message(
                 "Another adventure has already been started for this server. Currently only 1 can be run at the same time")
         else:
-            new_adventure = Adventure(theme, lore)
+            new_adventure = Adventure(theme, lore, interaction.guild)
+            await new_adventure.setup_roles()
+
             self.adventures[interaction.guild_id] = new_adventure
 
             await new_adventure.process_lore(interaction)
@@ -136,7 +138,7 @@ class MyClient(discord.Client):
         if adventure.has_player(interaction):
             change_details = True
         else:
-            adventure.add_user(interaction.user)
+            await adventure.add_user(interaction.user)
 
         if change_details:
             user: Player = adventure.player_list[interaction.user.id]

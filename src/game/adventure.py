@@ -3,7 +3,7 @@ from random import shuffle
 from typing import Union, Optional, List, Tuple
 
 import discord
-from discord import Interaction, TextChannel, Message, InteractionResponse
+from discord import Interaction, TextChannel, Message, InteractionResponse, Guild, Role, Color, Member
 
 from game.llm import LLM
 from game.messages.prompts import UserPrompt
@@ -11,13 +11,18 @@ from game.player import Player, generate_character
 
 
 class Adventure:
-    def __init__(self, theme, lore):
+    def __init__(self, theme: str, lore: Optional[str], guild: Guild):
         super().__init__()
 
+        self.role_name = "Adventurer"
+
+        self.guild = guild
         self.theme = theme
         self.lore = lore
         self.player_list = dict()
         self.started = False
+
+        self.role = None
 
         self.ready = False
 
@@ -108,6 +113,26 @@ class Adventure:
 
         await opt.delete()
 
+    async def guild_has_role(self) -> Optional[Role]:
+        roles: List[Role] = await self.guild.fetch_roles()
+
+        for role in roles:
+            if role.name == self.role_name:
+                return role
+
+        return None
+
+    async def setup_roles(self):
+
+        self.role = await self.guild_has_role()
+
+        if not self.role:
+            self.role = await self.guild.create_role(name=self.role_name, mentionable=True, hoist=True,
+                                                     color=Color.blue())
+
+    async def add_role(self, user: Member):
+        await user.add_roles(self.role)
+
     def adventure_announcement(self, show_lore=True) -> discord.Embed:
         embed_title = "New Adventure"
         embed = discord.Embed(title=embed_title,
@@ -123,9 +148,11 @@ class Adventure:
         # TODO Not make /join and /add_details to be hard-coded
         return embed
 
-    def add_user(self, user: Union[discord.Member, discord.User]) -> None:
+    async def add_user(self, user: Union[discord.Member, discord.User]) -> None:
         new_user = Player(user)
         self.player_list[user.id] = new_user
+
+        await self.add_role(user)
 
     async def start_adventure(self, interaction: Interaction):
         pass
@@ -168,8 +195,16 @@ class Adventure:
 
             await self.world_turn()
 
-    def terminate(self):
+    async def terminate(self):
         self._terminate.set()
+
+        await self.clear_user_roles()
+
+    async def clear_user_roles(self):
+        for player in self.player_list.values():
+            user: Union[discord.User, discord.Member] = player.discord_user
+
+            await user.remove_roles(self.role)
 
     async def generate_character_details(self, interaction: discord.Interaction):
         response: InteractionResponse = interaction.response
