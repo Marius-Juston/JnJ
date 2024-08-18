@@ -171,9 +171,9 @@ class MyClient(discord.Client):
                 f"/{self.join.name} or /{self.add_details.name} to be added.")
             return
 
-        if not adventure.started:
+        if adventure.started:
             await response.send_message(
-                f"The adventure is has already been started, please perform an action using the /{self.perform.name} command!")
+                f"The adventure has already been started, please perform an action using the /{self.perform.name} command!")
             return
 
         await response.send_message(
