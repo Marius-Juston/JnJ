@@ -8,5 +8,8 @@
     "character_creation": "templates/character_creation.txt"
   },
   "max_message_length": 2000,
-  "context_window": 64000
+  "context_window": 64000,
+  "num_predict": -1,
+  "repeat_last_n": -1,
+  "mirostat": 2
 }

@@ -1,7 +1,7 @@
 import json
 import threading
 from collections.abc import Callable
-from typing import Optional, Type, List
+from typing import Optional, Type, List, Any
 
 from langchain_core.messages import AIMessage, SystemMessage, HumanMessage
 from langchain_core.prompts import PromptTemplate
@@ -26,6 +26,9 @@ class LLM:
         self.llm = ChatOllama(
             model=self.config['model'],
             num_ctx=self.config['context_window'],
+            num_predict=self.config['num_predict'],
+            mirostat=self.config['mirostat'],
+            repeat_last_n=self.config['repeat_last_n'],
         )
 
         for parent in ('systems', 'templates'):
@@ -133,7 +136,7 @@ class LLM:
         return llm, messages
 
 
-def parse_tool_call(response: AIMessage, *tools: StructuredTool ):
+def parse_tool_call(response: AIMessage, *tools: StructuredTool) -> List[Any]:
     tools_dict = {func.name: func for func in tools}
 
     outputs = []
