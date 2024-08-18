@@ -1,0 +1,6 @@
+Character Name: Laura
+Character Background Lore: Laura was once a renowned scientist who worked on improving the stability of Aerion through her innovative use of nanobots. However, after a catastrophic experiment gone wrong resulted in the deaths of several colleagues and a significant tremor that shook Aerion, she abandoned her research and became a recluse in one of Aerion's smallest and most remote districts.
+Class Name: Nano Alchemist
+Race Name: Nanite
+Class Description: The Nano Alchemist specializes in manipulating and merging nanobots to create powerful constructs or alter their properties for various effects.
+Race Description: Nanites are sentient beings made entirely of programmable nanobots. They possess no physical form when not active, existing solely as consciousness within the Cloudmind, a collective digital network.

@@ -1,0 +1,6 @@
+Character Name: Marius
+Character Background Lore: Marius, once a renowned Knight in Aerion's royal guard, was banished after being falsely accused of treason. He now wanders Micromachia seeking evidence to clear his name.
+Class Name: Knight
+Race Name: Human
+Class Description: Knights are warriors who have sworn oaths to protect Micromachia and its inhabitants. They are experts in combat, skilled in wearing heavy armor and wielding weapons like lances and shields. Their code of honor drives them to defend the innocent and uphold justice.
+Race Description: Humans are the most numerous race in Micromachia, known for their adaptability and versatility. They possess average physical abilities but have excelled in mastering nanotechnology and psionics.

@@ -4,7 +4,7 @@ import os
 from langchain_ollama import ChatOllama
 
 from game.llm import LLM, parse_tool_call
-from game.player import player_
+from game.player import player_, Player
 
 
 def player_info(class_name: str, race_name: str, background_lore: str) -> bool:
@@ -93,7 +93,7 @@ def user_design(override=False):
 
 
     player = """
-Character Name: Marius
+Character Name: Laura
 Character Background Lore: 
 Class Name: 
 Race Name: 
@@ -107,6 +107,52 @@ Race Name:
     print(result.tool_calls[0]['args'])
     print(outputs)
 
+    class Temp:
+        def __init__(self):
+            self.display_name = "Marius"
+
+    player = Player(Temp())
+
+    print("---------------------------")
+    class_name, race_name, background_lore, race_description, class_description = outputs[0]
+    player.class_name = class_name
+    player.race_name = race_name
+    player.background_lore = background_lore
+    player.race_description = race_description
+    player.class_description = class_description
+    print(player)
+    print("---------------------------")
+
+
+def adventure_hook():
+    llm = LLM()
+
+    lore_file = 'test/context.txt'
+
+    with open(lore_file, 'r') as f:
+        lore = f.read()
+
+    player_list = []
+
+    for i in range(2):
+        player_file = f'test/player{i}.txt'
+
+        with open(player_file, 'r') as f:
+            player = f.read()
+
+        player_list.append(player)
+
+    human_input = "\n\n".join(
+        [f"PLAYER {i} START\n" + str(p) + f"\nPLAYER {i} END" for i, p in enumerate(player_list)])
+
+    print(human_input)
+
+    result = llm.invoke('adventure_hook', human_input, context=lore)
+
+    print(result.content)
 
 if __name__ == '__main__':
-    user_design(override=False)
+    adventure_hook()
+    # user_design(override=False)
+
+
