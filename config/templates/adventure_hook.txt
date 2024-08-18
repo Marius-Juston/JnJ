@@ -1,0 +1,13 @@
+World Background information:
+
+WORLD BACKGROUND START
+{context}
+WORLD BACKGROUND END
+
+Player information:
+
+PLAYER INFORMATION START
+{human_input}
+PLAYER INFORMATION END
+
+From this information generate the adventure hook:
