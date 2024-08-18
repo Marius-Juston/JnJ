@@ -1,7 +1,7 @@
 from typing import Any, Optional
 
 import discord
-from discord import app_commands, Intents, InteractionResponse, Embed
+from discord import app_commands, Intents, InteractionResponse, Embed, Role, Webhook, AllowedMentions
 from dotenv import dotenv_values
 
 from game.adventure import Adventure
@@ -134,10 +134,13 @@ class MyClient(discord.Client):
                 f"The adventure is not ready yet, please complete the /{self.setup_adventure.name} command!")
             return
 
+        first_time = False
+
         change_details = add_details
         if adventure.has_player(interaction):
             change_details = True
         else:
+            first_time = True
             await adventure.add_user(interaction.user)
 
         if change_details:
@@ -149,8 +152,17 @@ class MyClient(discord.Client):
         else:
             await adventure.generate_character_details(interaction)
 
-            await interaction.followup.send(
-                f"You have joined the adventure (to customize character details do /{self.join.name} add_details: True)")
+            followup: Webhook = interaction.followup
+
+            await followup.send(
+                content=f"You have joined the adventure (to customize character details do /{self.join.name} add_details: True)",
+                ephemeral=True)
+
+        if first_time:
+            followup: Webhook = interaction.followup
+            role: Role = adventure.role
+            await followup.send(
+                f"<@&{role.id}> {interaction.user.display_name} has joined the adventure!", allowed_mentions=AllowedMentions.all())
 
     async def start_(self, interaction: discord.Interaction):
 
@@ -177,6 +189,7 @@ class MyClient(discord.Client):
             await response.send_message(
                 f"The adventure has already been started, please perform an action using the /{self.perform.name} command!")
             return
+
 
         await adventure.start_adventure(interaction)
 
