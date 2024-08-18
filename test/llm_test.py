@@ -1,11 +1,9 @@
 import json
 import os
-from typing import Any
 
 from langchain_ollama import ChatOllama
-from typing_extensions import override
 
-from game.llm import LLM
+from game.llm import LLM, parse_tool_call
 from game.player import player_
 
 
@@ -101,11 +99,14 @@ Class Name:
 Race Name: 
     """.strip()
 
-    result = llm.invoke('character_creation', player, context=lore, tools=[player_] )
+    result = llm.invoke('character_creation', player, context=lore, tools=[player_] , tool_choice='player_')
+
+    outputs = parse_tool_call(result, player_)
 
     print(result.content)
     print(result.tool_calls[0]['args'])
+    print(outputs)
 
 
 if __name__ == '__main__':
-    user_design(override=True)
+    user_design(override=False)
