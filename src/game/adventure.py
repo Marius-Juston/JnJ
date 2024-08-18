@@ -22,7 +22,7 @@ class Adventure:
         self.player_list = dict()
         self.started = False
 
-        self.role = None
+        self.role: Role = None
 
         self.ready = False
 
@@ -154,10 +154,28 @@ class Adventure:
 
         await self.add_role(user)
 
-    async def start_adventure(self, interaction: Interaction):
-        self.started = True
+    def check_users_setup(self) -> List[Player]:
+        unfilled_players = []
 
+        for player in self.player_list.values():
+            if player.has_missing_info():
+                unfilled_players.append(player)
+
+        return unfilled_players
+
+    async def start_adventure(self, interaction: Interaction):
         response: InteractionResponse = interaction.response
+
+        invalid_user = self.check_users_setup()
+
+        if len(invalid_user) != 0:
+            user_mention = ' '.join(f"<@!{user.discord_user.id}>" for user in invalid_user)
+            await response.send_message(
+                content=f"The users {user_mention} still have some profile information missing, please make sure that that information has been filled in before starting")
+
+            return
+
+        self.started = True
 
         await response.defer(thinking=True)
 
