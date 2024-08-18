@@ -2,10 +2,12 @@
   "model": "mistral-nemo",
   "systems": {
     "lore": "system/llm_lore_system.txt",
-    "character_creation": "system/character_creation_system.txt"
+    "character_creation": "system/character_creation_system.txt",
+    "adventure_hook": "system/adventure_hook.txt"
   },
   "templates": {
-    "character_creation": "templates/character_creation.txt"
+    "character_creation": "templates/character_creation.txt",
+    "adventure_hook": "templates/adventure_hook.txt"
   },
   "max_message_length": 2000,
   "context_window": 64000,
