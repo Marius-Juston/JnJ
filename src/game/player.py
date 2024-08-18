@@ -4,6 +4,7 @@ from typing import Union, Any
 import discord
 from discord import Embed
 from langchain_core.tools import tool
+from pydantic import ValidationError
 
 from game.llm import LLM, parse_tool_call
 
@@ -94,7 +95,11 @@ async def generate_character(llm: LLM, player: Player, lore: str):
         print("ERROR WITH TOOL CHOICE NOT WORKING!!")
         return
 
-    outputs = parse_tool_call(result, player_)
+    try:
+        outputs = parse_tool_call(result, player_)
+    except ValidationError as e:
+        print("THE NEURAL NETWORK DID NOT OUTPUT ALL THE PLAYER OUTPUTS!!!!")
+        return
 
     class_name, race_name, background_lore, race_description, class_description = outputs[0]
 
