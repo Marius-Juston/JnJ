@@ -34,6 +34,10 @@ class MyClient(discord.Client):
                                          description="Perform whatever the current action the user wants to do for the current turn.")(
             self.perform)
 
+        self.add_random = self.tree.command(name='add_random',
+                                            description="For testing purposes add a random user")(
+            self.add_random)
+
         self.terminate = self.tree.command(name='terminate',
                                            description="Finishes the current adventure process.")(
             self.terminate)
@@ -162,7 +166,49 @@ class MyClient(discord.Client):
             followup: Webhook = interaction.followup
             role: Role = adventure.role
             await followup.send(
-                f"<@&{role.id}> {interaction.user.display_name} has joined the adventure!", allowed_mentions=AllowedMentions.all())
+                f"<@&{role.id}> {interaction.user.display_name} has joined the adventure!",
+                allowed_mentions=AllowedMentions.all())
+
+    async def add_random(self, interaction: discord.Interaction):
+        """
+        Join the DnD adventure
+        :param interaction:
+        :return:
+        """
+        response: InteractionResponse = interaction.response
+
+        if interaction.guild_id not in self.adventures:
+            await response.send_message("There is no adventure currently running")
+            return
+
+        adventure = self.adventures[interaction.guild_id]
+
+        if adventure.started:
+            await response.send_message("Cannot join / add character details to game that is already running")
+            return
+
+        if not adventure.ready:
+            await response.send_message(
+                f"The adventure is not ready yet, please complete the /{self.setup_adventure.name} command!")
+            return
+
+        member = None
+
+        async for member_ in interaction.guild.fetch_members(limit=150):
+            if member_.id not in adventure.player_list:
+                member = member_
+                break
+
+        if member is None:
+            await response.send_message(
+                f"No more players to add, they have been all added!")
+            return
+
+        await adventure.add_user(member)
+
+        interaction.user = member
+
+        await adventure.generate_character_details(interaction)
 
     async def start_(self, interaction: discord.Interaction):
 
@@ -242,6 +288,7 @@ if __name__ == '__main__':
     # Intent of that the client is planning to use
     intents = discord.Intents.default()
     intents.message_content = True
+    intents.members = True
 
     # Crease the client
     client = MyClient(intents=intents)
