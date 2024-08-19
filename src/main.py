@@ -182,14 +182,13 @@ class MyClient(discord.Client):
         if not adventure.has_player(interaction):
             await response.send_message(
                 "The member trying to start the adventure has not yet joined the adventure, please do "
-                f"/{self.join.name} or /{self.add_details.name} to be added.")
+                f"/{self.join.name} to be added.")
             return
 
         if adventure.started:
             await response.send_message(
                 f"The adventure has already been started, please perform an action using the /{self.perform.name} command!")
             return
-
 
         await adventure.start_adventure(interaction)
 
