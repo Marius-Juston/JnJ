@@ -13,4 +13,4 @@ Setting: Create a rich, extremely detailed, descriptive setting relevant to the 
 Background: Provide a brief history and current situation that explains the political, social, or magical environment of the setting. Introduce key factions, individuals, or events that have shaped the world leading up to the adventure. This should give context for the players’ mission and establish stakes for their involvement.
 
 These adventure should not necessarily contain magical elements, such as sci-fi adventures do not necessary have magic but rather be technology focused. This should be highly dependent on the theme.
-The given theme should NOT be the world's name just the overall theme of the story and should represent the overarching theme of a plot in a possible adventure hook
+The given theme should NOT be the world's name just the overall theme of the story and should represent the overarching theme of a plot. This should NOT be generating an adventure hook.
