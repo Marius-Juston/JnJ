@@ -3,7 +3,7 @@ import os
 
 from langchain_ollama import ChatOllama
 
-from game.llm import LLM, parse_tool_call
+from game.llm.llm import LLM, parse_tool_call
 from game.player import player_, Player
 
 

@@ -6,7 +6,7 @@ from discord import Embed
 from langchain_core.tools import tool
 from pydantic import ValidationError
 
-from game.llm import LLM, parse_tool_call
+from game.llm.llm import parse_tool_call, LLM
 
 
 @tool
