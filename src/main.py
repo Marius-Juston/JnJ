@@ -264,16 +264,11 @@ class MyClient(discord.Client):
                     f"/{self.join.name} to be added.")
                 return
 
-        if adventure.player_has_responded(interaction.user):
-            await response.send_message(
-                "The member has already responded to the current turn, once submitted you can no longer edit your responses!.")
-            return
-
         embed = Embed(title=f"{adventure.get_player(interaction).character_name}'s Action")
         embed.add_field(name="Turn", value=str(adventure.turn_count))
         embed.add_field(name="Action", value=action, inline=False)
 
-        await interaction.response.send_message(embed=embed)
+        await response.send_message(embed=embed)
 
         await adventure.add_user_response(interaction.user, action)
 
