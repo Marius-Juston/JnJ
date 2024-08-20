@@ -83,13 +83,14 @@ Race Description: {self.race_description if self.race_description else ''}
 
     def has_missing_info(self):
         return not (
-                    self.character_name and self.race_name and self.background_lore and self.class_name and self.race_description and self.class_description)
+                self.character_name and self.race_name and self.background_lore and self.class_name and self.race_description and self.class_description)
 
 
 async def generate_character(llm: LLM, player: Player, lore: str):
     character_sheet = str(player)
 
-    result = await llm.ainvoke('character_creation', character_sheet, context=lore, tools=[player_], tool_choice='player_')
+    result = await llm.ainvoke('character_creation', character_sheet, context=lore, tools=[player_],
+                               tool_choice='player_')
 
     if len(result.tool_calls) == 0:
         print("ERROR WITH TOOL CHOICE NOT WORKING!!")
@@ -106,7 +107,7 @@ async def generate_character(llm: LLM, player: Player, lore: str):
     print(result)
     print("Character Details", result.tool_calls)
 
-    if  len(race_name) <= 256:
+    if len(race_name) <= 256:
         player.race_name = race_name
     else:
         print("race_name too large")
@@ -116,17 +117,17 @@ async def generate_character(llm: LLM, player: Player, lore: str):
     else:
         print("class_name too large")
 
-    if  len(background_lore) <= 4096:
+    if len(background_lore) <= 4096:
         player.background_lore = background_lore
     else:
         print("background_lore too large")
 
-    if  len(race_description) <= 1024:
+    if len(race_description) <= 1024:
         player.race_description = race_description
     else:
         print("race_description too large")
 
-    if  len(class_description) <= 1024:
+    if len(class_description) <= 1024:
         player.class_description = class_description
     else:
         print("class_description too large")
