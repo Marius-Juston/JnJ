@@ -195,7 +195,7 @@ class MyClient(discord.Client):
         member = None
 
         async for member_ in interaction.guild.fetch_members(limit=150):
-            if member_.id not in adventure.player_list:
+            if not member_.bot and member_.id not in adventure.player_list:
                 member = member_
                 break
 
