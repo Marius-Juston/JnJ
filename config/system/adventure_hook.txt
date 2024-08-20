@@ -10,3 +10,5 @@ This should be said in the third person view as you represent the world view not
 
 The adventure hook should be short, only ONE paragraph long. DO NOT ADD FORESHADOWING OR POTENTIAL MYSTERIES THAT COULD BE UNRAVELLED. MAKE IT ONLY ABOUT THE ADVENTURERS.
 You SHOULD NOT ADD / CREATE other main characters during the adventure hook even if there is a single player.
+
+You should be returning a SINGLE short paragraph, no longer than 4 sentences!!
