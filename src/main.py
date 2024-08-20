@@ -261,7 +261,7 @@ class MyClient(discord.Client):
             else:
                 await response.send_message(
                     "The member trying to start the adventure has not yet joined the adventure, please do "
-                    f"/{self.join.name} or /{self.add_details.name} to be added.")
+                    f"/{self.join.name} to be added.")
                 return
 
         if adventure.player_has_responded(interaction.user):
