@@ -1,7 +1,7 @@
 import discord.ui
 from discord import Interaction, InteractionResponse
 
-from game.llm import LLM
+from game.llm.llm import LLM
 from game.messages.advanced_message import AdvancedMessage
 from game.player import Player, generate_character
 
