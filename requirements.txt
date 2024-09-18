@@ -1,2 +1,6 @@
 discord.py
-python-dotenv
+python-dotenv~=0.21.0
+langchain-core~=0.2.29
+pydantic~=2.8.2
+diffusers~=0.30.0
+langchain_community
