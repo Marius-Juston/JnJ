@@ -1,8 +1,10 @@
 import json
 import os
 
+from langchain_core.messages import SystemMessage, HumanMessage
 from langchain_ollama import ChatOllama
 
+from game.llm.dataclass import TimeEstimate
 from game.llm.llm import LLM, parse_tool_call
 from game.player import player_, Player
 
@@ -74,6 +76,7 @@ def test_lore_prompt():
     if chunks:
         print(chunks, end='')
 
+
 def user_design(override=False):
     llm = LLM()
 
@@ -91,7 +94,6 @@ def user_design(override=False):
 
     print(lore)
 
-
     player = """
 Character Name: Laura
 Character Background Lore: 
@@ -99,7 +101,7 @@ Class Name:
 Race Name: 
     """.strip()
 
-    result = llm.invoke('character_creation', player, context=lore, tools=[player_] , tool_choice='player_')
+    result = llm.invoke('character_creation', player, context=lore, tools=[player_], tool_choice='player_')
 
     outputs = parse_tool_call(result, player_)
 
@@ -151,8 +153,21 @@ def adventure_hook():
 
     print(result.content)
 
+
+def time_estimation():
+    llm = LLM()
+
+    messages = [
+        SystemMessage(llm.config['systems']['time_estimation']),
+        HumanMessage("Go on a date")
+    ]
+
+    llm = llm.llm.with_structured_output(TimeEstimate)
+
+    print(llm.invoke(messages))
+
+
 if __name__ == '__main__':
-    adventure_hook()
+    # adventure_hook()
     # user_design(override=False)
-
-
+    time_estimation()

@@ -1,6 +1,6 @@
-You must give an approximate estimate of the time that the given action would take given the current context of the story. The time returned must be in terms of days, hours, minutes and seconds. For examples:
+You must give an accurate estimate of the time that the given action would take. For example:
 
 Travel by root to another city which is 42 kilometers: 9 hours
 Opening a door: 5 seconds
 Opening a locked a door: 5 minutes, 30 seconds
-Building a house: 3 days
+Building a house: 7 days

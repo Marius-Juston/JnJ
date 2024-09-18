@@ -3,7 +3,8 @@
   "systems": {
     "lore": "system/llm_lore_system.txt",
     "character_creation": "system/character_creation_system.txt",
-    "adventure_hook": "system/adventure_hook.txt"
+    "adventure_hook": "system/adventure_hook.txt",
+    "time_estimation": "system/time_estimation.txt"
   },
   "templates": {
     "character_creation": "templates/character_creation.txt",

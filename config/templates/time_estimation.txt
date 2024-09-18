@@ -1,1 +1,3 @@
-The action to try to take this: {human_input}
+The action to accurately estimate is:
+
+{human_input}:
